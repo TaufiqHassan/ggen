@@ -40,7 +40,6 @@ def get_dir_path(path,dtype):
         path = Path('.').absolute()
     else:
         path = Path(path)
-        print('\nSelected',dtype,'directory',path)
     return path
     
 def make_dir(path):
@@ -118,7 +117,6 @@ class get_grid(object):
         if self._grid_dir == Path('.').absolute():
             self._grid_dir = self._data_dir
         if self._bilin != None:
-            # print(self._bilin)
             penta_file = {'4':'ne4np4_pentagons_c100308.nc','16':'ne16np4_110512_pentagons.nc','30':'ne30np4_pentagons.20190501.nc','120':'ne120np4_pentagons.20190601.nc'}
             return str(self._grid_dir)+'/'+penta_file[self._res]
         else:
@@ -146,19 +144,18 @@ class get_grid(object):
         if self._grid_dir == Path('.').absolute():
             self._grid_dir = self._data_dir
         se_grids = {96:'ne4np4',1536:'ne16np4',5400:'ne30np4',86400:'ne120np4',384:'ne4pg2',6144:'ne16pg2',21600:'ne30pg2',345600:'ne120pg2'}
-        print(self._data_dir)
-        data = xr.open_dataset(self._data_dir / self._file)
+        data = xr.open_dataset(self._file)
         try:
             lat = data.dims['lat']
             lon = data.dims['lon']
-            run(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{lat}x{lon}_SCRIP.nc {self._data_dir}/{self._file} {self._grid_dir}/foo.nc'.split(' '), capture_output=True, text=True, input="o")
+            run(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{lat}x{lon}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc'.split(' '), capture_output=True, text=True, input="o")
             print('\nGenerated '+str(lat)+'x'+str(lon)+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
             return str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc'
         except:
             try:
                 ncol = data.dims['ncol']
                 se_val = se_grids[ncol]
-                run(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{se_val}_SCRIP.nc {self._data_dir}/{self._file} {self._grid_dir}/foo.nc'.split(' '), capture_output=True, text=True, input="o")
+                run(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{se_val}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc'.split(' '), capture_output=True, text=True, input="o")
                 print('\nGenerated '+se_val+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
                 return str(self._grid_dir)+'/'+se_val+'_SCRIP.nc'
             except KeyError:

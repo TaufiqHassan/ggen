@@ -8,6 +8,7 @@ Created on Thu Feb 17 12:08:42 2022
 
 from pathlib import Path
 from subprocess import run
+import os
 
 from ggen.ggrids import get_res, get_dir_path
 
@@ -68,9 +69,12 @@ def get_maps(**kwargs):
                 print('\nGenerated map_'+ins+'_'+outs+'_bl.nc mapping file in '+str(_map_dir))
                 maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'_bl.nc')
             else:
-                run(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}.nc'.split(' '),capture_output=True)
-                print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
-                maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
+                if not os.path.exists(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc'):
+                    run(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}.nc'.split(' '),capture_output=True)
+                    print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
+                    maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
+                else:
+                    maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
     return maps
 
 

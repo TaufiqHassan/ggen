@@ -33,7 +33,7 @@ def get_rfiles(**kwargs):
         out_map_tag = map_file.split('/')[-1].split('map_')[1]
         new_file = _file.split('.nc')[0]+'_'+out_map_tag
         print(_data_dir,_file,new_file)
-        run(f'ncremap --map={map_file} {_data_dir}/{_file} {_data_dir}/{new_file}'.split(' '),capture_output=True)
+        run(f'ncremap --map={map_file} {_file} {_data_dir}/{new_file}'.split(' '),capture_output=True)
         print('\nGenerated remapped '+new_file.split('/')[-1]+' in '+str(_map_dir))
 
     
