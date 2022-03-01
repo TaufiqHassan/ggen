@@ -51,6 +51,7 @@ def get_maps(**kwargs):
     except:
         print('\nYou must provide a file name.')
     
+    
     gscrip._bilin = _bilin    
         
     list_in = gscrip.get_in_scrip()

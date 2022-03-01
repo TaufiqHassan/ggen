@@ -95,7 +95,6 @@ class get_res(object):
         return in_file_list
                 
     def get_in_scrip(self):
-        print(self._data_dir)
         out_file_list = []
         for f in self._file:
             out_file_list.append(get_grid(file=f,data_dir=self._data_dir).gen_scrip())
