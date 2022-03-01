@@ -35,58 +35,31 @@ class HidePrint:
         sys.stdout.close()
         sys.stdout = self._stdout
 
-class _dir_path(object):
+def get_dir_path(path,dtype):
+    if path == None:
+        path = Path('.').absolute()
+    else:
+        path = Path(path)
+        print('\nSelected',dtype,'directory',path)
+    return path
     
-    @staticmethod
-    def _get_map_dir(path):
-        if (path == ''):
-            p=Path('.')
-            map_dir = p.absolute() / 'maps'
-        else:
-            map_dir = Path(path)
-        return map_dir
-    
-    @staticmethod
-    def _get_grid_dir(path):
-        if (path == ''):
-            p=Path('.')
-            grid_dir = p.absolute() / 'grids'
-        else:
-            grid_dir = Path(path)
-        return grid_dir
+def make_dir(path):
+    if not os.path.exists(path):
+        print("\n"+str(path)+" doesn't exist. Creating one...\n")
+        os.makedirs(str(path))
 
-    
-    def _make_grid_dir(self):
-        p=Path('.')
-        print("\nCurrent directory: ", p.absolute())
-        print("\nDefault grid directory: ", p.absolute() / 'grids')
-        path = input("Please specify a grid directory here (Enter for default):\n")
-        grid_dir = _dir_path._get_grid_dir(path)
-        print("Selected directories: ", grid_dir)
-        if not os.path.exists(grid_dir):
-            print("\n"+str(grid_dir)+" doesn't exist. Creating one...\n")
-            os.makedirs(str(grid_dir))
-        return grid_dir
-    
-    def _make_map_dir(self):
-        p=Path('.')
-        print("\nCurrent directory: ", p.absolute())
-        print("\nDefault grid directory: ", p.absolute() / 'maps')
-        path = input("Please specify a map directory here (Enter for default):\n")
-        map_dir = _dir_path._get_map_dir(path)
-        print("Selected directories: ", map_dir)
-        if not os.path.exists(map_dir):
-            print("\n"+str(map_dir)+" doesn't exist. Creating one...\n")
-            os.makedirs(str(map_dir))
-        return map_dir
+def checker(file):
+    if os.path.exists(file):
+        print(file,'exists . . . reusing it.')
+        return file
 
 
 class get_res(object):
     def __init__(self, **kwargs):
         self._res = kwargs.get('res', None)
         self._file = kwargs.get('file', None)
-        self._grid_dir = kwargs.get('grid_dir', Path('.').absolute())
-        self._data_dir = kwargs.get('data_dir', Path('.').absolute())
+        self._grid_dir = kwargs.get('grid_dir', None)
+        self._data_dir = kwargs.get('data_dir', None)
         self._bilin = kwargs.get('bilin', None)
         
     @property
@@ -117,12 +90,13 @@ class get_res(object):
         in_file_list = []
         for r in self._res:
             if r[-3:] == 'pg2':
-                in_file_list.append(get_grid(res=r, grid_dir=self._grid_dir).gen_grid_pg2())
+                in_file_list.append(get_grid(res=r, grid_dir=self._grid_dir,data_dir=self._data_dir).gen_grid_pg2())
             else:
-                in_file_list.append(get_grid(res=r, grid_dir=self._grid_dir,bilin=self._bilin).gen_grid())
+                in_file_list.append(get_grid(res=r, grid_dir=self._grid_dir,data_dir=self._data_dir,bilin=self._bilin).gen_grid())
         return in_file_list
                 
     def get_in_scrip(self):
+        print(self._data_dir)
         out_file_list = []
         for f in self._file:
             out_file_list.append(get_grid(file=f,data_dir=self._data_dir).gen_scrip())
@@ -134,13 +108,15 @@ class get_grid(object):
     def __init__(self, **kwargs):
         self._res = kwargs.get('res', None)
         self._file = kwargs.get('file', None)
-        self._grid_dir = kwargs.get('grid_dir', Path('.').absolute())
-        self._data_dir = kwargs.get('data_dir', Path('.').absolute())
+        self._grid_dir = kwargs.get('grid_dir', None)
+        self._data_dir = kwargs.get('data_dir', None)
         self._bilin = kwargs.get('bilin', None)
         
     def gen_grid(self):
-        if self._grid_dir != Path('.').absolute():
-            self._grid_dir = _dir_path()._make_grid_dir()
+        self._data_dir=get_dir_path(self._data_dir,'data')
+        self._grid_dir=get_dir_path(self._grid_dir,'grid')
+        if self._grid_dir == Path('.').absolute():
+            self._grid_dir = self._data_dir
         if self._bilin != None:
             # print(self._bilin)
             penta_file = {'4':'ne4np4_pentagons_c100308.nc','16':'ne16np4_110512_pentagons.nc','30':'ne30np4_pentagons.20190501.nc','120':'ne120np4_pentagons.20190601.nc'}
@@ -153,8 +129,10 @@ class get_grid(object):
             return str(self._grid_dir)+str('/ne'+self._res+'np4_SCRIP.nc')
     
     def gen_grid_pg2(self):
-        if self._grid_dir != Path('.').absolute():
-            self._grid_dir = _dir_path()._make_grid_dir()
+        self._data_dir=get_dir_path(self._data_dir,'data')
+        self._grid_dir=get_dir_path(self._grid_dir,'grid')
+        if self._grid_dir == Path('.').absolute():
+            self._grid_dir = self._data_dir
         run(f'GenerateCSMesh --alt --res {self._res[:-3]} --file {self._grid_dir}/ne{self._res[:-3]}.g'.split(' '), capture_output=True)
         run(f'GenerateVolumetricMesh --in {self._grid_dir}/ne{self._res[:-3]}.g --out {self._grid_dir}/ne{self._res}.g --np 2 --uniform'.split(' '), capture_output=True)
         print('\nGenerated ne'+self._res+' grid in '+str(self._grid_dir))
@@ -163,10 +141,13 @@ class get_grid(object):
         return str(self._grid_dir)+str('/ne'+self._res+'_SCRIP.nc')
         
     def gen_scrip(self):
-        if self._data_dir != Path('.').absolute():
-            self._data_dir = _dir_path()._make_grid_dir()
+        self._data_dir=get_dir_path(self._data_dir,'data')
+        self._grid_dir=get_dir_path(self._grid_dir,'grid')
+        if self._grid_dir == Path('.').absolute():
+            self._grid_dir = self._data_dir
         se_grids = {96:'ne4np4',1536:'ne16np4',5400:'ne30np4',86400:'ne120np4',384:'ne4pg2',6144:'ne16pg2',21600:'ne30pg2',345600:'ne120pg2'}
-        data = xr.open_dataset(self._data_dir/self._file)
+        print(self._data_dir)
+        data = xr.open_dataset(self._data_dir / self._file)
         try:
             lat = data.dims['lat']
             lon = data.dims['lon']

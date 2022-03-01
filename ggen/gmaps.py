@@ -9,7 +9,7 @@ Created on Thu Feb 17 12:08:42 2022
 from pathlib import Path
 from subprocess import run
 
-from ggen.ggrids import get_res, _dir_path
+from ggen.ggrids import get_res, get_dir_path
 
 def get_algo(in_scrip, out_scrip, bilin=None):
     if bilin == None:
@@ -26,13 +26,16 @@ def get_algo(in_scrip, out_scrip, bilin=None):
 def get_maps(**kwargs):
     _res = kwargs.get('res', None)
     _file = kwargs.get('file', None)
-    _map_dir = kwargs.get('map_dir', Path('.').absolute())
-    _grid_dir = kwargs.get('grid_dir', Path('.').absolute())
-    _data_dir = kwargs.get('data_dir', Path('.').absolute())
+    _map_dir = kwargs.get('map_dir', None)
+    _grid_dir = kwargs.get('grid_dir', None)
+    _data_dir = kwargs.get('data_dir', None)
     _bilin = kwargs.get('bilin', None)
     
-    if _map_dir != Path('.').absolute():
-        _map_dir = _dir_path()._make_grid_dir()
+    _data_dir=get_dir_path(_data_dir,'data')
+    _grid_dir=get_dir_path(_grid_dir,'grid')
+    _map_dir=get_dir_path(_map_dir,'map')
+    if _map_dir == Path('.').absolute():
+        _map_dir = _data_dir
 
     gscrip = get_res(data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir)
     

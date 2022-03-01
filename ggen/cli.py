@@ -18,9 +18,9 @@ def main():
     parser.add_argument("-r", help="Resolutions (e.g. 4, 16, 30, 30pg2)", required=True)
     parser.add_argument("-f", help="File Names (input netcdf files names)", required=True)
     parser.add_argument("-bl", help="Select bilinear interpolation", action='store_true', default=None)
-    parser.add_argument("-m", help="Maps directory.", default=Path('.').absolute())
-    parser.add_argument("-g", help="Grids directory.", default=Path('.').absolute())
-    parser.add_argument("-d", help="Data directory.", default=Path('.').absolute())
+    parser.add_argument("-m", help="Maps directory.", default=None)
+    parser.add_argument("-g", help="Grids directory.", default=None)
+    parser.add_argument("-d", help="Data directory.", default=None)
     
     args = parser.parse_args()
     res = args.r
