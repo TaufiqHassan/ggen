@@ -20,6 +20,7 @@ def get_rfiles(**kwargs):
     _grid_dir = kwargs.get('grid_dir', None)
     _data_dir = kwargs.get('data_dir', None)
     _bilin = kwargs.get('bilin', None)
+    _grid = kwargs.get('grid', None)
     
     _data_dir=get_dir_path(_data_dir,'data')
     _grid_dir=get_dir_path(_grid_dir,'grid')
@@ -33,14 +34,14 @@ def get_rfiles(**kwargs):
     gscrip.file = _file
     file_list = gscrip._file
     
-    map_list = get_maps(res=_res, file=_file, data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir,bilin = _bilin)
+    map_list = get_maps(res=_res, file=_file, data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir,bilin = _bilin,grid=_grid)
     for f in file_list:
         for map_file in map_list:
             out_map_tag = map_file.split('/')[-1].split('map_')[1]
             new_file = f.split('.nc')[0]+'_'+out_map_tag
-            print(_data_dir,_file,new_file)
-            run(f'ncremap --map={map_file} {f} {_data_dir}/{new_file}'.split(' '),capture_output=True)
-            print('\nGenerated remapped '+new_file.split('/')[-1]+' in '+str(_map_dir))
+            with open(str(_data_dir)+'/logfile', "a") as outfile:
+                run(f'ncremap --map={map_file} {f} {_data_dir}/{new_file}'.split(' '), stdout=outfile)
+                print('\nGenerated remapped '+new_file.split('/')[-1]+' in '+str(_map_dir))
 
     
     

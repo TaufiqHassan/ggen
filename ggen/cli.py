@@ -7,7 +7,6 @@ Created on Mon Feb 21 17:43:42 2022
 """
 
 import argparse
-from pathlib import Path
 
 from ggen.grfiles import get_rfiles
 
@@ -21,6 +20,7 @@ def main():
     parser.add_argument("-m", help="Maps directory.", default=None)
     parser.add_argument("-g", help="Grids directory.", default=None)
     parser.add_argument("-d", help="Data directory.", default=None)
+    parser.add_argument("-gf", help="Insert grid file.", default=None)
     
     args = parser.parse_args()
     res = args.r
@@ -29,7 +29,8 @@ def main():
     m_dir = args.m
     g_dir = args.g
     d_dir = args.d
+    grid_file = args.gf
     
-    get_rfiles(res=res, file=file, data_dir=d_dir,grid_dir=g_dir,map_dir=m_dir,bilin = bl)
+    get_rfiles(res=res, file=file, data_dir=d_dir,grid_dir=g_dir,map_dir=m_dir,bilin = bl,grid=grid_file)
     
 

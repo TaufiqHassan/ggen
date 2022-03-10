@@ -31,6 +31,7 @@ def get_maps(**kwargs):
     _grid_dir = kwargs.get('grid_dir', None)
     _data_dir = kwargs.get('data_dir', None)
     _bilin = kwargs.get('bilin', None)
+    _grid = kwargs.get('grid', None)
     
     _data_dir=get_dir_path(_data_dir,'data')
     _grid_dir=get_dir_path(_grid_dir,'grid')
@@ -38,7 +39,7 @@ def get_maps(**kwargs):
     if _map_dir == Path('.').absolute():
         _map_dir = _data_dir
 
-    gscrip = get_res(data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir)
+    gscrip = get_res(data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir,grid=_grid)
     
     try:
         gscrip.res = _res
@@ -66,13 +67,15 @@ def get_maps(**kwargs):
             algo = get_algo(in_scrip, out_scrip, bilin = _bilin)
             print('\nUsing '+algo)
             if algo == 'bilinear':
-                run(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}_bl.nc'.split(' '),capture_output=True)
-                print('\nGenerated map_'+ins+'_'+outs+'_bl.nc mapping file in '+str(_map_dir))
+                with open(str(_data_dir)+'/logfile', "a") as outfile:
+                    run(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}_bl.nc'.split(' '), stdout=outfile)
+                    print('\nGenerated map_'+ins+'_'+outs+'_bl.nc mapping file in '+str(_map_dir))
                 maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'_bl.nc')
             else:
                 if not os.path.exists(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc'):
-                    run(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}.nc'.split(' '),capture_output=True)
-                    print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
+                    with open(str(_data_dir)+'/logfile', "a") as outfile:
+                        run(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}.nc'.split(' '), stdout=outfile)
+                        print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
                     maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
                 else:
                     maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
