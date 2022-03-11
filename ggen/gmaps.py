@@ -16,6 +16,8 @@ def get_algo(in_scrip, out_scrip, bilin=None):
     if bilin == None:
         if ('x' in in_scrip.split('/')[-1]) and ('np4' in out_scrip.split('/')[-1]):
             algo = 'fv2se_flx'
+        elif ('ne' not in in_scrip.split('/')[-1]):
+            algo = 'conserve'
         else:
             algo = 'fv2fv_flx'
     else:
