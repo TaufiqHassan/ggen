@@ -6,52 +6,9 @@ Created on Wed Feb 16 21:25:04 2022
 @author: thassan
 """
 
-from subprocess import run
-import os
 import xarray as xr
 from pathlib import Path
-import sys
-
-class color:
-   PURPLE = '\033[35m'
-   CYAN = '\033[36m'
-   BLUE = '\033[34m'
-   LBLUE='\033[94m'
-   GREEN = '\033[32m'
-   LGREEN='\033[92m'
-   YELLOW = '\033[33m'
-   RED = '\033[31m'
-   LRED='\033[91m'
-   BOLD = '\033[1m'
-   UNDERLINE = '\033[4m'
-   END = '\033[0m'
-
-class HidePrint:
-    def __enter__(self):
-        self._stdout = sys.stdout
-        sys.stdout = open(os.devnull, 'w')
-    
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        sys.stdout.close()
-        sys.stdout = self._stdout
-
-def get_dir_path(path,dtype):
-    if path == None:
-        path = Path('.').absolute()
-    else:
-        path = Path(path)
-    return path
-    
-def make_dir(path):
-    if not os.path.exists(path):
-        print("\n"+str(path)+" doesn't exist. Creating one...\n")
-        os.makedirs(str(path))
-
-def checker(file):
-    if os.path.exists(file):
-        print(file,'exists . . . reusing it.')
-        return file
-
+from ggen.utils import get_dir_path, exec_shell
 
 class get_res(object):
     def __init__(self, **kwargs):
@@ -123,8 +80,7 @@ class get_grid(object):
             self._grid_dir = self._data_dir
         print('\nUsing the specified grid file:',self._grid)
         if self._grid[-3:] != '.nc':
-            with open(str(self._data_dir)+'/logfile', "a") as outfile:
-                run(f'ConvertExodusToSCRIP --in {self._grid_dir}/{self._grid} --out {self._grid_dir}/{self._grid[:-2]}_SCRIP.nc'.split(' '), stdout=outfile)
+            exec_shell(f'ConvertExodusToSCRIP --in {self._grid_dir}/{self._grid} --out {self._grid_dir}/{self._grid[:-2]}_SCRIP.nc')
             return str(self._grid_dir)+'/'+self._grid[:-2]+'_SCRIP.nc'
         else:    
             return str(self._grid_dir)+'/'+self._grid
@@ -138,11 +94,10 @@ class get_grid(object):
             penta_file = {'4':'ne4np4_pentagons_c100308.nc','16':'ne16np4_110512_pentagons.nc','30':'ne30np4_pentagons.20190501.nc','120':'ne120np4_pentagons.20190601.nc'}
             return str(self._grid_dir)+'/'+penta_file[self._res]
         else:
-            with open(str(self._data_dir)+'/logfile', "a") as outfile:
-                run(f'GenerateCSMesh --alt --res {self._res} --file {self._grid_dir}/ne{self._res}.g'.split(' '), stdout=outfile)
-                print('\nGenerated ne'+self._res+'np4 grid in '+str(self._grid_dir))
-                run(f'ConvertExodusToSCRIP --in {self._grid_dir}/ne{self._res}.g --out {self._grid_dir}/ne{self._res}np4_SCRIP.nc'.split(' '), stdout=outfile)
-                print('\nGenerated ne'+self._res+'np4 SCRIP file in '+str(self._grid_dir))
+            exec_shell(f'GenerateCSMesh --alt --res {self._res} --file {self._grid_dir}/ne{self._res}.g')
+            print('\nGenerated ne'+self._res+'np4 grid in '+str(self._grid_dir))
+            exec_shell(f'ConvertExodusToSCRIP --in {self._grid_dir}/ne{self._res}.g --out {self._grid_dir}/ne{self._res}np4_SCRIP.nc')
+            print('\nGenerated ne'+self._res+'np4 SCRIP file in '+str(self._grid_dir))
             return str(self._grid_dir)+str('/ne'+self._res+'np4_SCRIP.nc')
     
     def gen_grid_pg2(self):
@@ -150,12 +105,11 @@ class get_grid(object):
         self._grid_dir=get_dir_path(self._grid_dir,'grid')
         if self._grid_dir == Path('.').absolute():
             self._grid_dir = self._data_dir
-        with open(str(self._data_dir)+'/logfile', "a") as outfile:
-            run(f'GenerateCSMesh --alt --res {self._res[:-3]} --file {self._grid_dir}/ne{self._res[:-3]}.g'.split(' '), stdout=outfile)
-            run(f'GenerateVolumetricMesh --in {self._grid_dir}/ne{self._res[:-3]}.g --out {self._grid_dir}/ne{self._res}.g --np 2 --uniform'.split(' '), stdout=outfile)
-            print('\nGenerated ne'+self._res+' grid in '+str(self._grid_dir))
-            run(f'ConvertExodusToSCRIP --in {self._grid_dir}/ne{self._res}.g --out {self._grid_dir}/ne{self._res}_SCRIP.nc'.split(' '), stdout=outfile)
-            print('\nGenerated ne'+self._res+' SCRIP file in '+str(self._grid_dir))
+        exec_shell(f'GenerateCSMesh --alt --res {self._res[:-3]} --file {self._grid_dir}/ne{self._res[:-3]}.g')
+        exec_shell(f'GenerateVolumetricMesh --in {self._grid_dir}/ne{self._res[:-3]}.g --out {self._grid_dir}/ne{self._res}.g --np 2 --uniform')
+        print('\nGenerated ne'+self._res+' grid in '+str(self._grid_dir))
+        exec_shell(f'ConvertExodusToSCRIP --in {self._grid_dir}/ne{self._res}.g --out {self._grid_dir}/ne{self._res}_SCRIP.nc')
+        print('\nGenerated ne'+self._res+' SCRIP file in '+str(self._grid_dir))
         return str(self._grid_dir)+str('/ne'+self._res+'_SCRIP.nc')
         
     def gen_scrip(self):
@@ -165,24 +119,18 @@ class get_grid(object):
             self._grid_dir = self._data_dir
         se_grids = {96:'ne4np4',1536:'ne16np4',5400:'ne30np4',86400:'ne120np4',384:'ne4pg2',6144:'ne16pg2',21600:'ne30pg2',345600:'ne120pg2'}
         data = xr.open_dataset(self._file)
-        if not os.path.exists(str(self._data_dir)+'/logfile'):
-            stat = "w"
-        else:
-            stat = "a"
         try:
             lat = data.dims['lat']
             lon = data.dims['lon']
-            with open(str(self._data_dir)+'/logfile', stat) as outfile:
-                run(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{lat}x{lon}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc'.split(' '), stdout=outfile, text=True, input="o")
-                print('\nGenerated '+str(lat)+'x'+str(lon)+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
+            exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{lat}x{lon}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
+            print('\nGenerated '+str(lat)+'x'+str(lon)+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
             return str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc'
         except:
             try:
                 ncol = data.dims['ncol']
                 se_val = se_grids[ncol]
-                with open(str(self._data_dir)+'/logfile', stat) as outfile:
-                    run(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{se_val}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc'.split(' '), stdout=outfile, text=True, input="o")
-                    print('\nGenerated '+se_val+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
+                exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{se_val}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
+                print('\nGenerated '+se_val+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
                 return str(self._grid_dir)+'/'+se_val+'_SCRIP.nc'
             except KeyError:
                 print('\nMake sure the file ',self._file,' has a lat/lon or ncol dimension.')

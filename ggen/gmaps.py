@@ -7,17 +7,15 @@ Created on Thu Feb 17 12:08:42 2022
 """
 
 from pathlib import Path
-from subprocess import run
 import os
 
-from ggen.ggrids import get_res, get_dir_path
+from ggen.ggrids import get_res
+from ggen.utils import get_dir_path, exec_shell
 
 def get_algo(in_scrip, out_scrip, bilin=None):
     if bilin == None:
         if ('x' in in_scrip.split('/')[-1]) and ('np4' in out_scrip.split('/')[-1]):
             algo = 'fv2se_flx'
-        elif ('ne' not in in_scrip.split('/')[-1]):
-            algo = 'conserve'
         else:
             algo = 'fv2fv_flx'
     else:
@@ -59,7 +57,6 @@ def get_maps(**kwargs):
         
     list_in = gscrip.get_in_scrip()
     list_out = gscrip.get_out_scrip()
-    
     maps = []
 
     for in_scrip in list_in:
@@ -69,15 +66,13 @@ def get_maps(**kwargs):
             algo = get_algo(in_scrip, out_scrip, bilin = _bilin)
             print('\nUsing '+algo)
             if algo == 'bilinear':
-                with open(str(_data_dir)+'/logfile', "a") as outfile:
-                    run(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}_bl.nc'.split(' '), stdout=outfile)
-                    print('\nGenerated map_'+ins+'_'+outs+'_bl.nc mapping file in '+str(_map_dir))
+                exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}_bl.nc')
+                print('\nGenerated map_'+ins+'_'+outs+'_bl.nc mapping file in '+str(_map_dir))
                 maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'_bl.nc')
             else:
                 if not os.path.exists(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc'):
-                    with open(str(_data_dir)+'/logfile', "a") as outfile:
-                        run(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}.nc'.split(' '), stdout=outfile)
-                        print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
+                    exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}.nc')
+                    print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
                     maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
                 else:
                     maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')

@@ -7,11 +7,13 @@ Created on Mon Feb 21 17:43:42 2022
 """
 
 import argparse
-
+import logging
 from ggen.grfiles import get_rfiles
 
 def main():
     
+    logging.basicConfig(filename='log.ggen', force=True, level=logging.INFO, format='%(message)s')
+
     parser = argparse.ArgumentParser()
     
     parser.add_argument("-r", help="Resolutions (e.g. 4, 16, 30, 30pg2)", required=True)

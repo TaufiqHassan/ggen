@@ -1,0 +1,64 @@
+
+[cmd]: ncks --rgr infer --rgr scrip=/Users/hass877/Work/data_analysis/384x576_SCRIP.nc cmip6_mam4_bc_a4_surf_1850_c20191108.nc /Users/hass877/Work/data_analysis/foo.nc
+
+
+
+[cmd]: GenerateCSMesh --alt --res 30 --file /Users/hass877/Work/data_analysis/ne30.g
+
+Parameters:
+  --res <integer> [30] 
+  --file <string> ["/Users/hass877/Work/data_analysis/ne30.g"] 
+  --out_format <string> ["Netcdf4"] 
+  --alt <bool> [true] 
+=========================================================
+..Generating mesh with resolution [30]
+..Writing mesh to file [/Users/hass877/Work/data_analysis/ne30.g] 
+Nodes per element
+..Block 1 (4 nodes): 5400
+..Mesh generator exited successfully
+=========================================================
+
+
+[cmd]: GenerateVolumetricMesh --in /Users/hass877/Work/data_analysis/ne30.g --out /Users/hass877/Work/data_analysis/ne30pg2.g --np 2 --uniform
+
+Parameters:
+  --in <string> ["/Users/hass877/Work/data_analysis/ne30.g"] 
+  --out <string> ["/Users/hass877/Work/data_analysis/ne30pg2.g"] 
+  --np <integer> [2] 
+  --uniform <bool> [true] 
+------------------------------------------------------------
+
+..Loading input mesh
+Mesh size: Nodes [5402] Elements [5400]
+..Computing sub-volume boundaries
+..Generating sub-volumes
+..Writing mesh
+Nodes per element
+..Block 1 (4 nodes): 21600
+..Mesh generator exited successfully
+=========================================================
+
+
+[cmd]: ConvertExodusToSCRIP --in /Users/hass877/Work/data_analysis/ne30pg2.g --out /Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc
+
+Parameters:
+  --in <string> ["/Users/hass877/Work/data_analysis/ne30pg2.g"] 
+  --out <string> ["/Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc"] 
+  --out_format <string> ["netcdf4"] 
+------------------------------------------------------------
+
+..Loading input mesh
+Mesh size: Nodes [21602] Elements [21600]
+..Writing mesh
+Nodes per element
+..Block 1 (4 nodes): 21600
+..Done writing
+..Mesh converter exited successfully
+=========================================================
+
+
+[cmd]: ncremap --map=/Users/hass877/Work/data_analysis/map_384x576_ne30pg2.nc cmip6_mam4_bc_a4_surf_1850_c20191108.nc /Users/hass877/Work/data_analysis/cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_ne30pg2.nc
+
+Input #00: /Users/hass877/Work/data_analysis/cmip6_mam4_bc_a4_surf_1850_c20191108.nc
+Map/Wgt  : /Users/hass877/Work/data_analysis/map_384x576_ne30pg2.nc
+

@@ -7,11 +7,10 @@ Created on Mon Feb 21 16:32:24 2022
 """
 
 from pathlib import Path
-from subprocess import run
 
 from ggen.gmaps import get_maps
 from ggen.ggrids import get_res
-from ggen.gmaps import get_dir_path
+from ggen.utils import get_dir_path, exec_shell
 
 def get_rfiles(**kwargs):
     _res = kwargs.get('res', None)
@@ -39,9 +38,8 @@ def get_rfiles(**kwargs):
         for map_file in map_list:
             out_map_tag = map_file.split('/')[-1].split('map_')[1]
             new_file = f.split('.nc')[0]+'_'+out_map_tag
-            with open(str(_data_dir)+'/logfile', "a") as outfile:
-                run(f'ncremap --map={map_file} {f} {_data_dir}/{new_file}'.split(' '), stdout=outfile)
-                print('\nGenerated remapped '+new_file.split('/')[-1]+' in '+str(_map_dir))
+            exec_shell(f'ncremap --map={map_file} {f} {_data_dir}/{new_file}')
+            print('\nGenerated remapped '+new_file.split('/')[-1]+' in '+str(_map_dir))
 
     
     
