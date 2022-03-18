@@ -8,6 +8,7 @@ Created on Wed Feb 16 21:25:04 2022
 
 import xarray as xr
 from pathlib import Path
+import os, logging
 from ggen.utils import get_dir_path, exec_shell
 
 class get_res(object):
@@ -122,15 +123,23 @@ class get_grid(object):
         try:
             lat = data.dims['lat']
             lon = data.dims['lon']
-            exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{lat}x{lon}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
-            print('\nGenerated '+str(lat)+'x'+str(lon)+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
+            if not os.path.exists(str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc'):
+                exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{lat}x{lon}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
+                print('\nGenerated '+str(lat)+'x'+str(lon)+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
+            else:
+                logger = logging.getLogger('log.ggen')
+                logger.info('\n'+str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc already exists.\nUsing it!')
             return str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc'
         except:
             try:
                 ncol = data.dims['ncol']
                 se_val = se_grids[ncol]
-                exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{se_val}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
-                print('\nGenerated '+se_val+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
+                if not os.path.exists(str(self._grid_dir)+'/'+se_val+'_SCRIP.nc'):
+                    exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{se_val}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
+                    print('\nGenerated '+se_val+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
+                else:
+                    logger = logging.getLogger('log.ggen')
+                    logger.info('\n'+str(self._grid_dir)+'/'+se_val+'_SCRIP.nc already exists.\nUsing it!')
                 return str(self._grid_dir)+'/'+se_val+'_SCRIP.nc'
             except KeyError:
                 print('\nMake sure the file ',self._file,' has a lat/lon or ncol dimension.')

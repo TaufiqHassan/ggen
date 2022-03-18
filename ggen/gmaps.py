@@ -8,6 +8,7 @@ Created on Thu Feb 17 12:08:42 2022
 
 from pathlib import Path
 import os
+import logging
 
 from ggen.ggrids import get_res
 from ggen.utils import get_dir_path, exec_shell
@@ -75,6 +76,8 @@ def get_maps(**kwargs):
                     print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
                     maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
                 else:
+                    logger = logging.getLogger('log.ggen')
+                    logger.info('\n'+str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc already exists.\nUsing it!')
                     maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
     return maps
 
