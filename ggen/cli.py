@@ -11,8 +11,6 @@ import logging
 from ggen.grfiles import get_rfiles
 
 def main():
-    
-    logging.basicConfig(filename='log.ggen', force=True, level=logging.INFO, format='%(message)s')
 
     parser = argparse.ArgumentParser()
     
@@ -23,6 +21,7 @@ def main():
     parser.add_argument("-g", help="Grids directory.", default=None)
     parser.add_argument("-d", help="Data directory.", default=None)
     parser.add_argument("-gf", help="Insert grid file.", default=None)
+    parser.add_argument("-sd", help="Add a sigleton dim.",action='store_true', default=None)
     
     args = parser.parse_args()
     res = args.r
@@ -32,7 +31,10 @@ def main():
     g_dir = args.g
     d_dir = args.d
     grid_file = args.gf
+    sdim = args.sd
     
-    get_rfiles(res=res, file=file, data_dir=d_dir,grid_dir=g_dir,map_dir=m_dir,bilin = bl,grid=grid_file)
+    logging.basicConfig(filename=str(d_dir)+'/log.ggen', force=True, level=logging.INFO, format='%(message)s')
+    
+    get_rfiles(res=res, file=file, data_dir=d_dir,grid_dir=g_dir,map_dir=m_dir,bilin = bl,grid=grid_file,sdim=sdim)
     
 

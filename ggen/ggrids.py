@@ -127,7 +127,7 @@ class get_grid(object):
                 exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{lat}x{lon}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
                 print('\nGenerated '+str(lat)+'x'+str(lon)+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
             else:
-                logger = logging.getLogger('log.ggen')
+                logger = logging.getLogger(str(self._data_dir)+'/log.ggen')
                 logger.info('\n'+str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc already exists.\nUsing it!')
             return str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc'
         except:
@@ -138,7 +138,7 @@ class get_grid(object):
                     exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{se_val}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
                     print('\nGenerated '+se_val+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
                 else:
-                    logger = logging.getLogger('log.ggen')
+                    logger = logging.getLogger(str(self._data_dir)+'/log.ggen')
                     logger.info('\n'+str(self._grid_dir)+'/'+se_val+'_SCRIP.nc already exists.\nUsing it!')
                 return str(self._grid_dir)+'/'+se_val+'_SCRIP.nc'
             except KeyError:
