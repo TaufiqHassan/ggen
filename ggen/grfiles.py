@@ -51,15 +51,15 @@ def get_rfiles(**kwargs):
                 logger.info('\n'+str(_data_dir)+'/'+new_file.split('/')[-1]+' already exists.')
             if _sdim!=None:
                 logger = logging.getLogger(str(_data_dir)+'/log.ggen')
-                logger.info('\nAdding a singleton dim: altitude.')
+                logger.info('\nAdding a singleton dim: lev.')
                 lev=np.array([1e5])
                 data=xr.open_dataset(str(_data_dir)+'/'+new_file.split('/')[-1])
-                data1=data.expand_dims('altitude',axis=1)
-                data2 = data1.assign_coords(altitude=('altitude',lev))
+                data1=data.expand_dims('lev',axis=1)
+                data2 = data1.assign_coords(lev=('lev',lev))
                 data3=data2
-                data3['lon_vertices']=data2['lon_vertices'].sel(altitude=1e5).drop('altitude')
-                data3['lat_vertices']=data2['lat_vertices'].sel(altitude=1e5).drop('altitude')
-                data3['area']=data2['area'].sel(altitude=1e5).drop('altitude')
+                data3['lon_vertices']=data2['lon_vertices'].sel(lev=1e5).drop('lev')
+                data3['lat_vertices']=data2['lat_vertices'].sel(lev=1e5).drop('lev')
+                data3['area']=data2['area'].sel(lev=1e5).drop('lev')
                 data3.load().to_netcdf(str(_data_dir)+'/'+new_file.split('/')[-1].split('.nc')[0]+'_lev.nc')
 
 
