@@ -39,6 +39,10 @@ def get_rfiles(**kwargs):
     file_list = gscrip._file
     
     map_list = get_maps(res=_res, file=_file, data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir,bilin = _bilin,grid=_grid)
+
+    file_list = list(set(file_list))
+    map_list = list(set(map_list))
+
     for f in file_list:
         for map_file in map_list:
             out_map_tag = map_file.split('/')[-1].split('map_')[1]
