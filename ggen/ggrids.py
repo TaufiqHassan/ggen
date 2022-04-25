@@ -8,6 +8,7 @@ Created on Wed Feb 16 21:25:04 2022
 
 import xarray as xr
 from pathlib import Path
+import glob
 import os, logging
 from ggen.utils import get_dir_path, exec_shell
 
@@ -38,11 +39,13 @@ class get_res(object):
     
     @file.setter
     def file(self, val):
-        self._file=[0]
-        files = [x.strip() for x in val.split(',')]
-        for zz in range(len(files)):
-            self._file.append(files[zz])
-        self._file.remove(0)
+        self._file=glob.glob(val)
+        if self._file==[]:
+            self._file=[0]
+            files = [x.strip() for x in val.split(',')]
+            for zz in range(len(files)):
+                self._file.append(files[zz])
+            self._file.remove(0)
         
     def get_out_scrip(self):
         in_file_list = []
