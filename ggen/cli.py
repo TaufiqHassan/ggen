@@ -16,7 +16,7 @@ def main():
     parser = argparse.ArgumentParser()
     
     parser.add_argument("-r", help="Resolutions (e.g. 4, 16, 30, 30pg2)", required=True)
-    parser.add_argument("-f", help="File Names (input netcdf files names)", required=True)
+    parser.add_argument("-f", help="File Names (input netcdf file names). Use ' ' when using wildcards.", required=True)
     parser.add_argument("-bl", help="Select bilinear interpolation", action='store_true', default=None)
     parser.add_argument("-m", help="Maps directory.", default=None)
     parser.add_argument("-g", help="Grids directory.", default=None)
@@ -44,6 +44,10 @@ def main():
 
     finish = time.perf_counter()
 
+    logging.info(f'\nFinished in {round(finish-start, 2)} second(s)')
+    logging.info('\n################################## Process Finished ##################################')
+    logging.info('######################################################################################\n')
+    
     print(f'Finished in {round(finish-start, 2)} second(s)')
     
 
