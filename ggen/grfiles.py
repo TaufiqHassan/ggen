@@ -3,7 +3,7 @@
 """
 Created on Mon Feb 21 16:32:24 2022
 
-@author: thassan
+@author: hass877
 """
 
 from pathlib import Path
@@ -11,6 +11,7 @@ import xarray as xr
 import numpy as np
 import os
 import logging
+import multiprocessing as mp
 
 from ggen.gmaps import get_maps
 from ggen.ggrids import get_res
@@ -25,6 +26,7 @@ def get_rfiles(**kwargs):
     _bilin = kwargs.get('bilin', None)
     _grid = kwargs.get('grid', None)
     _sdim = kwargs.get('sdim', None)
+    _mp = kwargs.get('mp', None)
     
     _data_dir=get_dir_path(_data_dir,'data')
     _grid_dir=get_dir_path(_grid_dir,'grid')
@@ -43,31 +45,34 @@ def get_rfiles(**kwargs):
     file_list = list(set(file_list))
     map_list = list(set(map_list))
 
-    for f in file_list:
+    def get_files(map_file,f,_data_dir,new_file,_sdim):
+        if not os.path.exists(str(_data_dir)+'/'+new_file.split('/')[-1]):
+            exec_shell(f'ncremap --map={map_file} {f} {_data_dir}/{new_file}')
+            print('\nGenerated remapped '+new_file.split('/')[-1]+' in '+str(_data_dir))
+        else:
+            logger = logging.getLogger(str(_data_dir)+'/log.ggen')
+            logger.info('\n'+str(_data_dir)+'/'+new_file.split('/')[-1]+' already exists.')
+        if _sdim!=None:
+            logger = logging.getLogger(str(_data_dir)+'/log.ggen')
+            logger.info('\nAdding a singleton dim: lev.')
+            lev=np.array([1e5])
+            data=xr.open_dataset(str(_data_dir)+'/'+new_file.split('/')[-1])
+            data1=data.expand_dims('lev',axis=1)
+            data2 = data1.assign_coords(lev=('lev',lev))
+            data2.load().to_netcdf(str(_data_dir)+'/'+new_file.split('/')[-1].split('.nc')[0]+'_lev.nc',format="NETCDF3_64BIT")
+
+    processes = []
+    for _,f in zip(range(len(file_list)),file_list):
         for map_file in map_list:
             out_map_tag = map_file.split('/')[-1].split('map_')[1]
             new_file = f.split('.nc')[0]+'_'+out_map_tag
-            if not os.path.exists(str(_data_dir)+'/'+new_file.split('/')[-1]):
-                exec_shell(f'ncremap --map={map_file} {f} {_data_dir}/{new_file}')
-                print('\nGenerated remapped '+new_file.split('/')[-1]+' in '+str(_data_dir))
+            if _mp!=None:
+                p = mp.Process(target=get_files, args=[map_file,f,_data_dir,new_file,_sdim])
+                p.start()
+                processes.append(p)
             else:
-                logger = logging.getLogger(str(_data_dir)+'/log.ggen')
-                logger.info('\n'+str(_data_dir)+'/'+new_file.split('/')[-1]+' already exists.')
-            if _sdim!=None:
-                logger = logging.getLogger(str(_data_dir)+'/log.ggen')
-                logger.info('\nAdding a singleton dim: lev.')
-                lev=np.array([1e5])
-                data=xr.open_dataset(str(_data_dir)+'/'+new_file.split('/')[-1])
-                data1=data.expand_dims('lev',axis=1)
-                data2 = data1.assign_coords(lev=('lev',lev))
-                data3=data2
-                data3['lon_vertices']=data2['lon_vertices'].sel(lev=1e5).drop('lev')
-                data3['lat_vertices']=data2['lat_vertices'].sel(lev=1e5).drop('lev')
-                data3['area']=data2['area'].sel(lev=1e5).drop('lev')
-                data3.load().to_netcdf(str(_data_dir)+'/'+new_file.split('/')[-1].split('.nc')[0]+'_lev.nc')
+                get_files(map_file,f,_data_dir,new_file,_sdim)
+    if _mp!=None:
+        for process in processes:
+            process.join()
 
-
-
-
-    
-    

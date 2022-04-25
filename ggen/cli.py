@@ -6,6 +6,7 @@ Created on Mon Feb 21 17:43:42 2022
 @author: thassan
 """
 
+import time
 import argparse
 import logging
 from ggen.grfiles import get_rfiles
@@ -22,6 +23,7 @@ def main():
     parser.add_argument("-d", help="Data directory.", default=None)
     parser.add_argument("-gf", help="Insert grid file.", default=None)
     parser.add_argument("-sd", help="Add a sigleton dim.",action='store_true', default=None)
+    parser.add_argument("-mp", help="Multiprocessing",action='store_true', default=None)
     
     args = parser.parse_args()
     res = args.r
@@ -32,9 +34,16 @@ def main():
     d_dir = args.d
     grid_file = args.gf
     sdim = args.sd
+    mp = args.mp
     
     logging.basicConfig(filename=str(d_dir)+'/log.ggen', force=True, level=logging.INFO, format='%(message)s')
+
+    start = time.perf_counter()
     
-    get_rfiles(res=res, file=file, data_dir=d_dir,grid_dir=g_dir,map_dir=m_dir,bilin = bl,grid=grid_file,sdim=sdim)
+    get_rfiles(res=res, file=file, data_dir=d_dir,grid_dir=g_dir,map_dir=m_dir,bilin = bl,grid=grid_file,sdim=sdim,mp=mp)
+
+    finish = time.perf_counter()
+
+    print(f'Finished in {round(finish-start, 2)} second(s)')
     
 
