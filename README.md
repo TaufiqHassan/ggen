@@ -33,7 +33,7 @@ And then activate genv to use ggen
 
 ### Example
 
-General use
+(1) General use
 
 `python ../ggen/ggen.py -r 30pg2,16pg2,4pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis`
 ```
@@ -65,4 +65,22 @@ Generated remapped cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_ne16pg2.nc in /U
 
 Generated remapped cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_ne4pg2.nc in /Users/hass877/Work/data_analysis
 Finished in 14.99 second(s)
+```
+
+(2) Specified grid file (e.g., RRM grid)
+
+`python ../ggen/ggen.py -r 30pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis -gf northamericax4v1pg2.g`
+```
+Generated 384x576_SCRIP.nc inferred from cmip6_mam4_bc_a4_surf_1850_c20191108.nc in /Users/hass877/Work/data_analysis
+
+Specifying grid file suppresses resolution 30pg2
+
+Using the specified grid file: northamericax4v1pg2.g
+
+Using fv2fv_flx
+
+Generated map_384x576_northamericax4v1pg2.nc mapping file in /Users/hass877/Work/data_analysis
+
+Generated remapped cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_northamericax4v1pg2.nc in /Users/hass877/Work/data_analysis
+Finished in 13.37 second(s)
 ```
