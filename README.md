@@ -26,4 +26,7 @@ optional arguments:
 Use the yml file provided to create a virtual conda enviroment (genv)
 
 `conda env create -f environment.yml`
+
+And then activate genv to use ggen
+
 `conda activate genv`
