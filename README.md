@@ -4,7 +4,7 @@ Generate grids and remap to SE at any resolution. `ggen` does conservative remap
 
 ### Usage
 
-`python ggen/ggen.py -h`
+``python ggen/ggen.py -h``
 ```
 usage: ggen.py [-h] -r R -f F [-bl] [-m M] [-g G] [-d D] [-gf GF] [-sd] [-mp]
 
@@ -35,7 +35,7 @@ And then activate genv to use ggen
 
 (1) General use
 
-`python ../ggen/ggen.py -r 30pg2,16pg2,4pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis`
+``python ../ggen/ggen.py -r 30pg2,16pg2,4pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis``
 ```
 Generated ne30pg2 grid in /Users/hass877/Work/data_analysis
 
@@ -69,7 +69,7 @@ Finished in 14.99 second(s)
 
 (2) Specified grid file (e.g., RRM grid)
 
-`python ../ggen/ggen.py -r 30pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis -gf northamericax4v1pg2.g`
+``python ../ggen/ggen.py -r 30pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis -gf northamericax4v1pg2.g``
 ```
 Generated 384x576_SCRIP.nc inferred from cmip6_mam4_bc_a4_surf_1850_c20191108.nc in /Users/hass877/Work/data_analysis
 
