@@ -30,3 +30,39 @@ Use the yml file provided to create a virtual conda enviroment (genv)
 And then activate genv to use ggen
 
 `conda activate genv`
+
+### Example
+
+General use
+
+`python ../ggen/ggen.py -r 30pg2,16pg2,4pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis`
+```
+Generated ne30pg2 grid in /Users/hass877/Work/data_analysis
+
+Generated ne30pg2 SCRIP file in /Users/hass877/Work/data_analysis
+
+Generated ne16pg2 grid in /Users/hass877/Work/data_analysis
+
+Generated ne16pg2 SCRIP file in /Users/hass877/Work/data_analysis
+
+Generated ne4pg2 grid in /Users/hass877/Work/data_analysis
+
+Generated ne4pg2 SCRIP file in /Users/hass877/Work/data_analysis
+
+Using fv2fv_flx
+
+Using fv2fv_flx
+
+Generated map_384x576_ne16pg2.nc mapping file in /Users/hass877/Work/data_analysis
+
+Using fv2fv_flx
+
+Generated map_384x576_ne4pg2.nc mapping file in /Users/hass877/Work/data_analysis
+
+Generated remapped cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_ne30pg2.nc in /Users/hass877/Work/data_analysis
+
+Generated remapped cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_ne16pg2.nc in /Users/hass877/Work/data_analysis
+
+Generated remapped cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_ne4pg2.nc in /Users/hass877/Work/data_analysis
+Finished in 14.99 second(s)
+```
