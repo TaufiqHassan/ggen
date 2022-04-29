@@ -20,3 +20,9 @@ optional arguments:
   -sd         Add a sigleton dim.
   -mp         Multiprocessing
 ```
+
+### Installation
+
+Use the yml file provided to create a virtual conda enviroment (genv)
+`conda env create -f environment.yml`
+`conda activate genv`
