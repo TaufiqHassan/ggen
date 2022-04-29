@@ -1,6 +1,6 @@
 ## ggen
 
-Generate grids and remap to SE at any resolution.
+Generate grids and remap to SE at any resolution. Produces grid files, scrip files, map files and reampped file.
 
 ### Usage
 
