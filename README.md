@@ -2,7 +2,8 @@
 
 Generate grids and remap to SE at any resolution. `ggen` does conservative remapping unless explicitly specified with `-bl` option. Produces grid files, scrip files, map files, reampped file and a log file. If the file already exists, it will be skipped. Logs are appended to log.ggen.
 
-### Usage
+Usage
+-----
 
 ``python ggen/ggen.py -h``
 ```
@@ -21,7 +22,8 @@ optional arguments:
   -mp         Multiprocessing
 ```
 
-### Installation
+Installation
+------------
 
 Use the yml file provided to create a virtual conda enviroment (genv)
 
@@ -31,10 +33,10 @@ And then activate genv to use ggen
 
 `conda activate genv`
 
-### Example
+Example
+-------
 
-General use
------------
+### General use
 
 ``python ../ggen/ggen.py -r 30pg2,16pg2,4pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis``
 ```
@@ -68,7 +70,7 @@ Generated remapped cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_ne4pg2.nc in /Us
 Finished in 14.99 second(s)
 ```
 
-(2) Specified grid file (e.g., RRM grid)
+### Specified grid file (e.g., RRM grid)
 
 ``python ../ggen/ggen.py -r 30pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis -gf northamericax4v1pg2.g``
 ```
