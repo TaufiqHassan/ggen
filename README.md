@@ -87,3 +87,46 @@ Generated map_384x576_northamericax4v1pg2.nc mapping file in /Users/hass877/Work
 Generated remapped cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_northamericax4v1pg2.nc in /Users/hass877/Work/data_analysis
 Finished in 13.37 second(s)
 ```
+
+### Using muliprocessing and wildcards
+``python ggen/ggen.py -r 4pg2 -f "*surf*" -d /compyfs/www/hass877/share/emis_data/DECK120_to_SE -sd -mp``
+```
+Generated ne4pg2 grid in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Generated ne4pg2 SCRIP file in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Using fv2fv_flx
+
+Generated map_384x576_ne4pg2.nc mapping file in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Using fv2fv_flx
+
+Using fv2fv_flx
+
+Using fv2fv_flx
+
+Using fv2fv_flx
+
+Using fv2fv_flx
+
+Using fv2fv_flx
+
+Using fv2fv_flx
+
+Generated remapped cmip6_mam4_num_a2_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Generated remapped cmip6_mam4_so4_a1_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Generated remapped cmip6_mam4_so4_a2_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Generated remapped cmip6_mam4_so2_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Generated remapped cmip6_mam4_num_a1_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Generated remapped cmip6_mam4_bc_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Generated remapped cmip6_mam4_pom_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+
+Generated remapped cmip6_mam4_num_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+Finished in 588.88 second(s)
+```
