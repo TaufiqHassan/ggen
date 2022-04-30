@@ -33,7 +33,8 @@ And then activate genv to use ggen
 
 ### Example
 
-(1) General use
+General use
+-----------
 
 ``python ../ggen/ggen.py -r 30pg2,16pg2,4pg2 -f cmip6_mam4_bc_a4_surf_1850_c20191108.nc -d /Users/hass877/Work/data_analysis``
 ```
