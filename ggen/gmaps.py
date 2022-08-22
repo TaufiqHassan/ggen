@@ -33,6 +33,7 @@ def get_maps(**kwargs):
     _data_dir = kwargs.get('data_dir', None)
     _bilin = kwargs.get('bilin', None)
     _grid = kwargs.get('grid', None)
+    mapfile = kwargs.get('mapfile', None)
     
     _data_dir=get_dir_path(_data_dir,'data')
     _grid_dir=get_dir_path(_grid_dir,'grid')
@@ -40,45 +41,50 @@ def get_maps(**kwargs):
     if _map_dir == Path('.').absolute():
         _map_dir = _data_dir
 
-    gscrip = get_res(data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir,grid=_grid)
-    
-    try:
-        gscrip.res = _res
-    except:
-        print('\nYou must put a resolution value.')
-        print('\nExample: 30, 16, 30pg2 etc.')
+    if mapfile == None:
+        gscrip = get_res(data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir,grid=_grid)
         
-    try:
-        gscrip.file = _file
-    except:
-        print('\nYou must provide a file name.')
-    
-    
-    gscrip._bilin = _bilin    
+        try:
+            gscrip.res = _res
+        except:
+            print('\nYou must put a resolution value.')
+            print('\nExample: 30, 16, 30pg2 etc.')
+            
+        try:
+            gscrip.file = _file
+        except:
+            print('\nYou must provide a file name.')
         
-    list_in = gscrip.get_in_scrip()
-    list_out = gscrip.get_out_scrip()
-    maps = []
-
-    for in_scrip in list_in:
-        for out_scrip in list_out:
-            ins=in_scrip.split('/')[-1].split('_')[0]
-            outs=out_scrip.split('/')[-1].split('_')[0]
-            algo = get_algo(in_scrip, out_scrip, bilin = _bilin)
-            print('\nUsing '+algo)
-            if algo == 'bilinear':
-                exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}_bl.nc')
-                print('\nGenerated map_'+ins+'_'+outs+'_bl.nc mapping file in '+str(_map_dir))
-                maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'_bl.nc')
-            else:
-                if not os.path.exists(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc'):
-                    exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}.nc')
-                    print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
-                    maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
+        
+        gscrip._bilin = _bilin    
+            
+        list_in = gscrip.get_in_scrip()
+        list_out = gscrip.get_out_scrip()
+        maps = []
+    
+        for in_scrip in list_in:
+            for out_scrip in list_out:
+                ins=in_scrip.split('/')[-1].split('_')[0]
+                outs=out_scrip.split('/')[-1].split('_')[0]
+                algo = get_algo(in_scrip, out_scrip, bilin = _bilin)
+                print('\nUsing '+algo)
+                if algo == 'bilinear':
+                    exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}_bl.nc')
+                    print('\nGenerated map_'+ins+'_'+outs+'_bl.nc mapping file in '+str(_map_dir))
+                    maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'_bl.nc')
                 else:
-                    logger = logging.getLogger(str(_data_dir)+'/log.ggen')
-                    logger.info('\n'+str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc already exists.\nUsing it!')
-                    maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
+                    if not os.path.exists(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc'):
+                        exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={_map_dir}/map_{ins}_{outs}.nc')
+                        print('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(_map_dir))
+                        maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
+                    else:
+                        logger = logging.getLogger(str(_data_dir)+'/log.ggen')
+                        logger.info('\n'+str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc already exists.\nUsing it!')
+                        maps.append(str(_map_dir)+'/'+'map_'+ins+'_'+outs+'.nc')
+    else:
+        print("\nApplying map file.\n")
+        maps = mapfile.strip().split(',')
+        
     return maps
 
 

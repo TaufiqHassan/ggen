@@ -27,6 +27,7 @@ def get_rfiles(**kwargs):
     _grid = kwargs.get('grid', None)
     _sdim = kwargs.get('sdim', None)
     _mp = kwargs.get('mp', None)
+    mapfile = kwargs.get('mapfile', None)
     
     _data_dir=get_dir_path(_data_dir,'data')
     _grid_dir=get_dir_path(_grid_dir,'grid')
@@ -40,7 +41,8 @@ def get_rfiles(**kwargs):
     gscrip.file = _file
     file_list = gscrip._file
     
-    map_list = get_maps(res=_res, file=_file, data_dir=_data_dir,grid_dir=_grid_dir,map_dir=_map_dir,bilin = _bilin,grid=_grid)
+    map_list = get_maps(res=_res, file=_file, data_dir=_data_dir,grid_dir=_grid_dir, \
+                        map_dir=_map_dir,bilin = _bilin,grid=_grid, mapfile=mapfile)
 
     file_list = list(set(file_list))
     map_list = list(set(map_list))
@@ -64,6 +66,7 @@ def get_rfiles(**kwargs):
     processes = []
     for _,f in zip(range(len(file_list)),file_list):
         for map_file in map_list:
+            print(map_file)
             out_map_tag = map_file.split('/')[-1].split('map_')[1]
             new_file = f.split('.nc')[0]+'_'+out_map_tag
             if _mp!=None:

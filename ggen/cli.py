@@ -22,6 +22,7 @@ def main():
     parser.add_argument("-g", help="Grids directory.", default=None)
     parser.add_argument("-d", help="Data directory.", default=None)
     parser.add_argument("-gf", help="Insert grid file.", default=None)
+    parser.add_argument("-mf", help="Insert map file.", default=None)
     parser.add_argument("-sd", help="Add a sigleton dim.",action='store_true', default=None)
     parser.add_argument("-mp", help="Multiprocessing",action='store_true', default=None)
     
@@ -33,6 +34,7 @@ def main():
     g_dir = args.g
     d_dir = args.d
     grid_file = args.gf
+    map_file = args.mf
     sdim = args.sd
     mp = args.mp
     
@@ -40,7 +42,7 @@ def main():
 
     start = time.perf_counter()
     
-    get_rfiles(res=res, file=file, data_dir=d_dir,grid_dir=g_dir,map_dir=m_dir,bilin = bl,grid=grid_file,sdim=sdim,mp=mp)
+    get_rfiles(res=res, file=file, data_dir=d_dir,grid_dir=g_dir,map_dir=m_dir,bilin = bl,grid=grid_file,mapfile=map_file,sdim=sdim,mp=mp)
 
     finish = time.perf_counter()
 
