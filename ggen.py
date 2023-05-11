@@ -1,4 +1,4 @@
-from ggen.gcli import main
+from ggen.main import main
 
 if __name__=='__main__':
     main()
