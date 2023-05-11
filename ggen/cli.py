@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Feb 21 17:43:42 2022
-
-@author: thassan
-"""
 
 import time
 import argparse
