@@ -42,7 +42,7 @@ def main():
 
     start = time.perf_counter()
     
-    logging.info('\n################################## Process Started ##################################')
+    logging.info('\n################################## Process Started in main ##################################')
     
     if scrip:
         gen_scrip(res=res, file=file, path=outdir, fdir=indir, grid=grid_file, nc=True).get_scrip_file()
@@ -52,7 +52,7 @@ def main():
     finish = time.perf_counter()
 
     logging.info(f'\nFinished in {round(finish-start, 2)} second(s)')
-    logging.info('\n################################## Process Finished ##################################')
+    logging.info('\n################################## Process Finished in main ##################################')
     logging.info('######################################################################################\n')
     
     print(f'\nFinished in {round(finish-start, 2)} second(s)')
