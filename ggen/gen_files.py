@@ -67,7 +67,6 @@ class driver(object):
             if self._mp==None:
                 self.apply_weights(self,str(mapfile),str(file),dir_path)
             else:
-                self.logger.info('\n=== gen_remapped_files ===')
                 self.logger.info('\nApplied multiprocessing.')
                 p = mp.Process(target=self.apply_weights, args=[self,str(mapfile),str(file),dir_path])
                 p.start()
