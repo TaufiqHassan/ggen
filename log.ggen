@@ -1,70 +1,65 @@
 
-[cmd]: ncks --rgr infer --rgr scrip=/Users/hass877/Work/data_analysis/384x576_SCRIP.nc cmip6_mam4_bc_a4_surf_1850_c20191108.nc /Users/hass877/Work/data_analysis/foo.nc
+################################## Process Started ##################################
+
+[cmd]: python ggen.py -r 30 -f bc_emission_def.nc -ind /Users/hass877/Work/data_analysis -out /Users/hass877/Work/data_analysis
 
 
+=== driver init done ===
 
-[cmd]: GenerateCSMesh --alt --res 30 --file /Users/hass877/Work/data_analysis/ne30.g
+Specifying input file suppresses resolution.
+(Recommended for SE to RLL conversion)
 
-Parameters:
-  --res <integer> [30] 
-  --file <string> ["/Users/hass877/Work/data_analysis/ne30.g"] 
-  --out_format <string> ["Netcdf4"] 
-  --alt <bool> [true] 
-=========================================================
-..Generating mesh with resolution [30]
-..Writing mesh to file [/Users/hass877/Work/data_analysis/ne30.g] 
-Nodes per element
-..Block 1 (4 nodes): 5400
-..Mesh generator exited successfully
-=========================================================
+Generating RLL grid metadata
 
+Creating SCRIP file RLL180x360_SCRIP.nc in /Users/hass877/Work/data_analysis
 
-[cmd]: GenerateVolumetricMesh --in /Users/hass877/Work/data_analysis/ne30.g --out /Users/hass877/Work/data_analysis/ne30pg2.g --np 2 --uniform
+Generated /Users/hass877/Work/data_analysis/RLL180x360_SCRIP.nc
 
-Parameters:
-  --in <string> ["/Users/hass877/Work/data_analysis/ne30.g"] 
-  --out <string> ["/Users/hass877/Work/data_analysis/ne30pg2.g"] 
-  --np <integer> [2] 
-  --uniform <bool> [true] 
-------------------------------------------------------------
+Generated /Users/hass877/Work/data_analysis/RLL180x360_SCRIP.nc
 
-..Loading input mesh
-Mesh size: Nodes [5402] Elements [5400]
-..Computing sub-volume boundaries
-..Generating sub-volumes
-..Writing mesh
-Nodes per element
-..Block 1 (4 nodes): 21600
-..Mesh generator exited successfully
-=========================================================
+Output Resolution: 30
 
+Generating exodus metadata
 
-[cmd]: ConvertExodusToSCRIP --in /Users/hass877/Work/data_analysis/ne30pg2.g --out /Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc
+Generating pg2 metadata
 
-Parameters:
-  --in <string> ["/Users/hass877/Work/data_analysis/ne30pg2.g"] 
-  --out <string> ["/Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc"] 
-  --out_format <string> ["netcdf4"] 
-------------------------------------------------------------
+Creating SCRIP file ne30pg2_SCRIP.nc in /Users/hass877/Work/data_analysis
 
-..Loading input mesh
-Mesh size: Nodes [21602] Elements [21600]
-..Writing mesh
-Nodes per element
-..Block 1 (4 nodes): 21600
-..Done writing
-..Mesh converter exited successfully
-=========================================================
+Generated /Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc
 
+Generated /Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc
 
-[cmd]: ncremap --alg_typ=fv2fv_flx --src_grd=/Users/hass877/Work/data_analysis/384x576_SCRIP.nc --dst_grd=/Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc --map=/Users/hass877/Work/data_analysis/map_384x576_ne30pg2.nc
+=== gen_scrips done ===
 
-Grid(src): /Users/hass877/Work/data_analysis/384x576_SCRIP.nc
+Input SCRIP:/Users/hass877/Work/data_analysis/RLL180x360_SCRIP.nc
+Output SCRIP:/Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc
+
+[cmd]: ncremap --alg_typ=fv2fv_flx --src_grd=/Users/hass877/Work/data_analysis/RLL180x360_SCRIP.nc --dst_grd=/Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc --map=/Users/hass877/Work/data_analysis/map_RLL180x360_ne30pg2.nc
+
+Grid(src): /Users/hass877/Work/data_analysis/RLL180x360_SCRIP.nc
 Grid(dst): /Users/hass877/Work/data_analysis/ne30pg2_SCRIP.nc
 
 
-[cmd]: ncremap --map=/Users/hass877/Work/data_analysis/map_384x576_ne30pg2.nc cmip6_mam4_bc_a4_surf_1850_c20191108.nc /Users/hass877/Work/data_analysis/cmip6_mam4_bc_a4_surf_1850_c20191108_384x576_ne30pg2.nc
+Generated map_RLL180x360_ne30pg2.nc mapping file in /Users/hass877/Work/data_analysis
 
-Input #00: /Users/hass877/Work/data_analysis/cmip6_mam4_bc_a4_surf_1850_c20191108.nc
-Map/Wgt  : /Users/hass877/Work/data_analysis/map_384x576_ne30pg2.nc
+=== gen_weights done ===
+
+Applying /Users/hass877/Work/data_analysis/map_RLL180x360_ne30pg2.nc on /Users/hass877/Work/data_analysis/bc_emission_def.nc
+
+[cmd]: ncremap --map=/Users/hass877/Work/data_analysis/map_RLL180x360_ne30pg2.nc /Users/hass877/Work/data_analysis/bc_emission_def.nc /Users/hass877/Work/data_analysis/bc_emission_def_RLL180x360_ne30pg2.nc
+
+Input #00: /Users/hass877/Work/data_analysis/bc_emission_def.nc
+Map/Wgt  : /Users/hass877/Work/data_analysis/map_RLL180x360_ne30pg2.nc
+
+
+Generated remapped file /Users/hass877/Work/data_analysis/bc_emission_def_RLL180x360_ne30pg2.nc
+
+=== apply_weights done ===
+
+=== gen_remapped_files done ===
+
+Finished in 4.17 second(s)
+
+################################## Process Finished ##################################
+######################################################################################
 
