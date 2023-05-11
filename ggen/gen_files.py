@@ -10,11 +10,25 @@ from ggen.ggrids import generate_grids
 from ggen.utils import get_dir_path, exec_shell, checker
 
 class driver(object):
-    # Put more comments
-    # Class names
-    # Namelist
-    # Separate func for separate purpose
     def __init__(self, **kwargs):
+        '''
+        Initiates class.
+
+        Parameters
+        ----------
+        **kwargs : Multiple arguments
+            Output resolution
+            Input resolution
+            Input filenames
+            Input grid filename
+            Input directory
+            Output directory
+            Input mapping file
+        Options:
+            Add single dim
+            Apply multiprocessing
+
+        '''
         self._res = kwargs.get('res', None)
         self._ires = kwargs.get('ires', None)
         self._file = kwargs.get('file', None)
@@ -22,9 +36,9 @@ class driver(object):
         self._grid = kwargs.get('grid', None)
         self._indir = kwargs.get('ind', '')
         self._outdir = kwargs.get('out', '')
+        self._mf = kwargs.get('mapfile', None)
         self._sdim = kwargs.get('sdim', None)
         self._mp = kwargs.get('mp', None)
-        self._mf = kwargs.get('mapfile', None)
         self.gen_grids = generate_grids(ind=self._indir,out=self._outdir)
         self.gen_grids.file = self._file
         self.gen_grids.grid = self._grid
@@ -33,9 +47,13 @@ class driver(object):
         self.logger = logging.getLogger(str(get_dir_path(self._outdir))+'/log.ggen')
     
     def gen_remapped_files(self):
-        # called by 
-        # And Calls
-        # Move to begining
+        '''
+        Generate remapped files.
+        Has option to apply multiprocessing.
+        
+        Depends on gen_weights & apply_weights methods.
+        
+        '''
         file_list = self.gen_grids._file
         map_list = self.gen_weights()
         dir_path = get_dir_path(self._outdir)
@@ -53,6 +71,15 @@ class driver(object):
                 process.join()
         
     def gen_weights(self):
+        '''
+        Generates weights/mapping files.
+
+        Returns
+        -------
+        maps : List
+            List of mapping files.
+
+        '''
         maps = []
         if self._mf != None:
             self.logger.info('\nSpecifying map file suppresses weight generation.')
@@ -67,10 +94,7 @@ class driver(object):
                 checker(fname)
                 maps.append(fname)
         else:
-            list_in = self.gen_grids.get_inp_scrip()
-            list_in = list(pd.Series(list_in).unique())
-            list_out = self.gen_grids.get_out_scrip()
-            list_out = list(pd.Series(list_out).unique())
+            list_in, list_out = self.gen_scrips()
         
             for in_scrip in list_in:
                 for out_scrip in list_out:
@@ -82,22 +106,59 @@ class driver(object):
                     dir_path = get_dir_path(self._outdir)
                     fname = dir_path / str('map_'+ins+'_'+outs+'.nc')
                     if not Path(fname).is_file():
-                        exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={fname}')
-                        self.logger.info('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(dir_path))
+                        rc = exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={fname}')
+                        if rc == 0:
+                            self.logger.info('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(dir_path))
+                        else:
+                            self.logger.info('\nWeights were not generated properly!')
                         maps.append(fname)
                     else:
                         self.logger.info('\n'+str(fname)+' already exists!\nUsing it.')
                         maps.append(fname)
         return maps
+    
+    def gen_scrips(self):
+        '''
+        Generates input and out SCRIP files.
+
+        Returns
+        -------
+        list_in : List
+            List of input SCRIP files.
+        list_out : List
+            List of Output SCRIP files.
+
+        '''
+        list_in = self.gen_grids.get_inp_scrip()
+        list_in = list(pd.Series(list_in).unique())
+        list_out = self.gen_grids.get_out_scrip()
+        list_out = list(pd.Series(list_out).unique())
+        return list_in, list_out
 
     @staticmethod
     def apply_weights(self,mapfile,file,dir_path):
+        '''
+        Applies weights on the input files.
+
+        Parameters
+        ----------
+        mapfile : NetCDF file
+            Weights/Mapping files.
+        file : NetCDF file
+            Input files.
+        dir_path : Directory
+            Path to output directory.
+
+        '''
         out_map_tag = mapfile.split('/')[-1].split('map_')[1]
         fname = dir_path / str(file.split('/')[-1].split('.nc')[0]+'_'+out_map_tag)
-        self.logger.info('Applying '+mapfile+' on '+file)
+        self.logger.info('\nApplying '+mapfile+' on '+file)
         if not Path(fname).is_file():
-            exec_shell(f'ncremap --map={mapfile} {file} {fname}')
-            self.logger.info('\nGenerated remapped file '+str(fname))
+            rc = exec_shell(f'ncremap --map={mapfile} {file} {fname}')
+            if rc == 0:
+                self.logger.info('\nGenerated remapped file '+str(fname))
+            else:
+                self.logger.info('\nRemapped files were not generated!')
         else:
             self.logger.info('\n'+str(fname)+' already exists.')
         if self._sdim != None:
