@@ -6,6 +6,12 @@ from ggen.gen_files import driver
 from ggen.gen_scrip_file import gen_scrip
 
 def main():
+    '''
+    Created to produce a command line interface (CLI).
+    Takes and parses arguments from user and uses those
+    to initiate the driver class in gen_files.py
+
+    '''
 
     parser = argparse.ArgumentParser()
     

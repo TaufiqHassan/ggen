@@ -6,6 +6,11 @@ from ggen.utils import get_dir_path, checker
 from ggen.gen_scrip_file import gen_scrip
 
 class generate_grids(object):
+    '''
+    generate_grids class handles all type of grid & SCRIP file generation.
+    Returns lists of SCRIP filenames.
+ 
+    '''
     def __init__(self, **kwargs):
         self._res = kwargs.get('res', None)
         self._ires = kwargs.get('ires', None)
@@ -98,6 +103,18 @@ class generate_grids(object):
             self._infile.remove(0)
     
     def get_inp_scrip(self):
+        '''
+        Generate SCRIP files from input NetCDF files or resolution.
+        Input resolution:
+            For SE grids integer values (4, 30, 120 etc.)
+            For RLL grids use latitudexlongitude (64x128, 180x360 etc.)
+
+        Returns
+        -------
+        in_file_list : List
+            List of SCRIP file names for the input mesh.
+
+        '''
         in_file_list = []
         if self._ires != None:
             for r in self._ires:
@@ -114,6 +131,18 @@ class generate_grids(object):
         return in_file_list
     
     def get_out_scrip(self):
+        '''
+        Generate SCRIP files from output grid file or resolution.
+        Output resolution:
+            For SE grids integer values (4, 30, 120 etc.)
+            For RLL grids use latitudexlongitude (64x128, 180x360 etc.)
+
+        Returns
+        -------
+        out_file_list : List
+            List of SCRIP file names for the output mesh.
+
+        '''
         out_file_list = []
         if self._grid != None:
             for g in self._grid:
