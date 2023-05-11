@@ -46,6 +46,8 @@ class driver(object):
         self.gen_grids.ires = self._ires
         self.logger = logging.getLogger(str(get_dir_path(self._outdir))+'/log.ggen')
     
+        self.logger.info('\n=== driver init done ===')
+        
     def gen_remapped_files(self):
         '''
         Generate remapped files.
@@ -54,6 +56,9 @@ class driver(object):
         Depends on gen_weights & apply_weights methods.
         
         '''
+        
+        self.logger.info('\n=== gen_remapped_files start ===')
+        
         file_list = self.gen_grids._file
         map_list = self.gen_weights()
         dir_path = get_dir_path(self._outdir)
@@ -70,6 +75,8 @@ class driver(object):
             for process in processes:
                 process.join()
         
+        self.logger.info('\n=== gen_remapped_files done ===')
+        
     def gen_weights(self):
         '''
         Generates weights/mapping files.
@@ -80,6 +87,9 @@ class driver(object):
             List of mapping files.
 
         '''
+        
+        self.logger.info('\n=== gen_weights start ===')
+            
         maps = []
         if self._mf != None:
             self.logger.info('\nSpecifying map file suppresses weight generation.')
@@ -115,6 +125,9 @@ class driver(object):
                     else:
                         self.logger.info('\n'+str(fname)+' already exists!\nUsing it.')
                         maps.append(fname)
+                        
+        self.logger.info('\n=== gen_weights done ===')
+        
         return maps
     
     def gen_scrips(self):
@@ -129,10 +142,16 @@ class driver(object):
             List of Output SCRIP files.
 
         '''
+        
+        self.logger.info('\n=== gen_scrips start ===')
+        
         list_in = self.gen_grids.get_inp_scrip()
         list_in = list(pd.Series(list_in).unique())
         list_out = self.gen_grids.get_out_scrip()
         list_out = list(pd.Series(list_out).unique())
+        
+        self.logger.info('\n=== gen_scrips done ===')
+        
         return list_in, list_out
 
     @staticmethod
@@ -150,6 +169,9 @@ class driver(object):
             Path to output directory.
 
         '''
+
+        self.logger.info('\n=== apply_weights start ===')
+        
         out_map_tag = mapfile.split('/')[-1].split('map_')[1]
         fname = dir_path / str(file.split('/')[-1].split('.nc')[0]+'_'+out_map_tag)
         self.logger.info('\nApplying '+mapfile+' on '+file)
@@ -169,4 +191,5 @@ class driver(object):
             data2 = data1.assign_coords(lev=('lev',lev))
             data2.load().to_netcdf(str(fname).replace('.nc','_lev.nc'),format="NETCDF3_64BIT")
                             
-            
+        self.logger.info('\n=== apply_weights done ===')
+        
