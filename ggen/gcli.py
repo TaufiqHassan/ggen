@@ -2,7 +2,7 @@ import time
 import argparse
 import logging
 
-from ggen.gen_weight_files import driver
+from ggen.gen_files import driver
 from ggen.gen_scrip_file import gen_scrip
 
 def main():
