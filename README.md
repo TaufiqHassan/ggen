@@ -5,7 +5,9 @@ Generates Spectral Element (SE) and Regular Latitude Longitude (RLL) grid meshes
 Usage
 -----
 
-``python ggen.py -h``
+```console
+python ggen.py -h
+```
 ```
 usage: ggen.py [-h] [-r R] [-f F] [-ind IND] [-out OUT] [-gf GF] [-mf MF]
                [-sd] [-scrip] [-mp] [-ir IR]
