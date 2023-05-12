@@ -8,7 +8,7 @@ from pathlib import Path
 from itertools import product
 
 from ggen.ggrids import generate_grids
-from ggen.utils import get_dir_path, exec_shell, checker
+from ggen.utils import get_dir_path, exec_shell, checker, get_sizes
 
 class driver(object):
     def __init__(self, **kwargs):
@@ -58,20 +58,24 @@ class driver(object):
         gen_grids.file = self._file
         
         file_list = gen_grids._file
+        list_of_filelist = get_sizes(file_list)
+        
         map_list = self.gen_weights()
         dir_path = get_dir_path(self._outdir)
-        processes = []
-        for mapfile, file in product(map_list,file_list):
-            if self._mp==None:
-                self.apply_weights(self,str(mapfile),str(file),dir_path)
-            else:
-                self.logger.info('\nApplied multiprocessing.')
-                p = mp.Process(target=self.apply_weights, args=[self,str(mapfile),str(file),dir_path])
-                p.start()
-                processes.append(p)
-        if self._mp!=None:
-            for process in processes:
-                process.join()
+        
+        for filelist in list_of_filelist:
+            processes = []
+            for mapfile, file in product(map_list,filelist):
+                if self._mp==None:
+                    self.apply_weights(self,str(mapfile),str(file),dir_path)
+                else:
+                    self.logger.info('\nApplied multiprocessing.')
+                    p = mp.Process(target=self.apply_weights, args=[self,str(mapfile),str(file),dir_path])
+                    p.start()
+                    processes.append(p)
+            if self._mp!=None:
+                for process in processes:
+                    process.join()
                 
         self.logger.info('\n=== gen_remapped_files done ===')
         
@@ -115,7 +119,7 @@ class driver(object):
                         if rc == 0:
                             self.logger.info('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(dir_path))
                         else:
-                            self.logger.info('\nWeights were not generated properly!')
+                            self.logger.info('\nERROR: Weights were not generated properly!')
                         maps.append(fname)
                     else:
                         self.logger.info('\n'+str(fname)+' already exists!\nUsing it.')
@@ -157,7 +161,7 @@ class driver(object):
         self.logger.info('\n=== gen_scrips done ===')
         
         return list_in, list_out
-
+    
     @staticmethod
     def apply_weights(self,mapfile,file,dir_path):
         '''
@@ -181,7 +185,7 @@ class driver(object):
             if rc == 0:
                 self.logger.info('\nGenerated remapped file '+str(fname))
             else:
-                self.logger.info('\nRemapped files were not generated!')
+                self.logger.info('\nERROR: Remapped files were not generated!')
         else:
             self.logger.info('\n'+str(fname)+' already exists.')
         if self._sdim != None:

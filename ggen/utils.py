@@ -52,6 +52,42 @@ def log_out(p, logger):
         logger.info('got line from sub: %r', line)
     
 
+def get_sizes(filelist, limit=200000):
+    '''
+    Splits a list of files based on the file sizes
+    to handle memory issues in multiprocessing.
+
+    Parameters
+    ----------
+    filelist : List
+        Original list of files.
+
+    Returns
+    -------
+    listoflists : List
+        Split list of lists of files.
+
+    '''
+    size_of_file = 0
+    listoflists = []
+    new_filelist = []
+    i=0
+    for file in filelist:
+        size_of_file = size_of_file + os.stat(str(file)).st_size/1024/1024
+        if size_of_file < limit:
+            new_filelist.append(file)
+        else:
+            new_filelist.append(file)
+            size_of_file = 0
+            listoflists.append(new_filelist)
+            new_filelist = []
+        i+=1
+    if len(filelist[i:]) != 0:
+        listoflists.append(filelist[i:])
+    if len(new_filelist) == len(filelist):
+        listoflists.append(new_filelist)
+    return listoflists
+
 def exec_shell(cmd,inp='',hide=False):
     logger = logging.getLogger('log.ggen')
     cmd_split = shlex.split(cmd)
