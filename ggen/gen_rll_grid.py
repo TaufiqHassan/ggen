@@ -6,8 +6,21 @@ import logging
 from ggen.utils import get_dir_path
 
 class gen_RLL(object):
+    """
+    A class for generating a regular latitude-longitude (RLL) grid.
+
+    Args:
+        res (str): Resolution of the grid in the format 'lat_resolution x lon_resolution'. Default is '180x360'.
+        file (str): Input file name containing lon and lat coordinates. Default is None.
+        nc (bool): Flag indicating whether to generate NetCDF output. Default is False.
+        fdir (str): Input file directory. Default is an empty string.
+        path (str): Output file directory. Default is an empty string.
+    """
     
     def __init__(self,**kwargs):
+        """
+        Initializes the gen_RLL object with the provided arguments.
+        """
         self.nResolution = kwargs.get('res', '180x360')
         self.file = kwargs.get('file', None)
         self.nc = kwargs.get('nc', False)
@@ -18,6 +31,21 @@ class gen_RLL(object):
         self.logger = logging.getLogger(str(get_dir_path(self.path))+'/log.ggen')
         
     def get_rll(self):
+        """
+        Generates the regular latitude-longitude (RLL) grid.
+
+        Returns:
+            If nc is True:
+                str: Path to the generated NetCDF file.
+            If nc is False:
+                tuple: A tuple containing the following grid information:
+                    - coord (ndarray): Array of shape (3, num_nodes) representing the grid coordinates.
+                    - Fixedfaces (ndarray): Array of shape (num_faces, 4) representing the faces of the grid.
+                    - oldfaces (ndarray): Array of shape (num_faces, 4) representing the original faces of the grid.
+                    - n_lat (int): Number of latitudes in the grid.
+                    - n_lon (int): Number of longitudes in the grid.
+                    - rank (int): A constant value 2 representing the number of dimensions of the grid.
+        """
         if self.file != None:
             if Path(str(self.file)).is_file():
                 data = xr.open_dataset(str(self.file))

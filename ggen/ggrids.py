@@ -1,6 +1,6 @@
-from pathlib import Path
 import glob
 import logging
+from pathlib import Path
 
 from ggen.utils import get_dir_path, checker
 from ggen.gen_scrip_file import gen_scrip
