@@ -1,6 +1,6 @@
 ## Grid Generator (ggen)
 
-Generates Spectral Element (SE) and Regular Latitude Longitude (RLL) grid meshes and performs conservative remapping between list of meshes with any resolution. Logs are appended to log.ggen. This is part of an emission pre-processor.
+Generates Spectral Element (SE) and Regular Latitude Longitude (RLL) grid meshes and performs conservative remapping between list of meshes. Works with `tempestremap` and `nco` under the hood. Logs are appended to log.ggen.
 
 Usage
 -----
@@ -345,3 +345,10 @@ Example batch script
 source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
 python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
 ```
+
+### References
+
+<a id="1">[1]</a> 
+Ullrich, Paul A and Taylor, Mark A (2015). 
+Arbitrary-order conservative and consistent remapping and a theory of linear maps: Part I. 
+Monthly Weather Review, 143, 2419-2440.
