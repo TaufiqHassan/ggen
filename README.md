@@ -125,7 +125,10 @@ Finished in 4.17 second(s)
 python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
 ```
 
-Example `log.ggen` output
+<details><summary>Long log file</summary>
+<p>
+
+#### log.ggen output
 
 ```
 Generated ne4pg2 grid in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
@@ -158,12 +161,8 @@ Generated remapped cmip6_mam4_so4_a2_surf_1850-2014_c20191108_384x576_ne4pg2.nc 
 
 Generated remapped cmip6_mam4_so2_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Generated remapped cmip6_mam4_num_a1_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
-
-Generated remapped cmip6_mam4_bc_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
-
-Generated remapped cmip6_mam4_pom_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
-
-Generated remapped cmip6_mam4_num_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
-Finished in 588.88 second(s)
+Generated remapped cmip6
 ```
+
+</p>
+</details>
