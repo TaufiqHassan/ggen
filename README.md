@@ -25,6 +25,11 @@ optional arguments:
   -ir IR      Input resolutions (e.g. 16, 30, 64x128, 180x360)
 ```
 
+General Structure
+-----------------
+
+![ggen schematic](./ggen.png)
+
 Installation
 ------------
 
@@ -326,7 +331,7 @@ Finished in 348.79 second(s)
 
 Example batch script
 
-```console
+```bash
 #!/bin/bash -l
 #SBATCH --job-name=ggen
 #SBATCH --output=ggen.o%j
