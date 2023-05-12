@@ -39,20 +39,7 @@ class gen_scrip(object):
         
     def get_scrip_file(self):
         
-        if (self.grid != None):
-            dir_path = get_dir_path(self.path)
-            fname = dir_path / str(str(self.grid)[:-3]+'.nc')
-            if not Path(fname).is_file():
-                dir_path = get_dir_path(self.fdir)
-                fname = dir_path / str(str(self.grid)[:-3]+'.nc')
-                data = xr.open_dataset(dir_path / str(self.grid))
-                coord, modf, faces = data['coord'].values, data['connect1'].values, data['connect1'].values -1
-                rank = 1
-                dims = np.array([1],dtype=np.int32)
-            else:
-                self.logger.info(str(fname)+' already exists!\n Using it.')
-                return dir_path / str(str(self.grid)[:-2]+'_SCRIP.nc')
-        elif (self.file != None):
+        if (self.file != None):
             if Path(str(self.file)).is_file():
                 data = xr.open_dataset(str(self.file))
             else:
@@ -68,6 +55,19 @@ class gen_scrip(object):
             else:
                 self.logger.info(str(fname)+' already exists!\n Using it.')
                 return fname
+        elif (self.grid != None):
+            dir_path = get_dir_path(self.path)
+            fname = dir_path / str(str(self.grid)[:-3]+'.nc')
+            if not Path(fname).is_file():
+                dir_path = get_dir_path(self.fdir)
+                fname = dir_path / str(str(self.grid)[:-3]+'.nc')
+                data = xr.open_dataset(dir_path / str(self.grid))
+                coord, modf, faces = data['coord'].values, data['connect1'].values, data['connect1'].values -1
+                rank = 1
+                dims = np.array([1],dtype=np.int32)
+            else:
+                self.logger.info(str(fname)+' already exists!\n Using it.')
+                return dir_path / str(str(self.grid))
         elif ('x' in self.nResolution):
             n_lon=int(self.nResolution.split('x')[1])
             n_lat=int(self.nResolution.split('x')[0])

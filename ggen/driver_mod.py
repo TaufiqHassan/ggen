@@ -43,25 +43,7 @@ class driver(object):
         self.logger = logging.getLogger(str(get_dir_path(self._outdir))+'/log.ggen')
         
         self.logger.info('\n=== driver init done ===')
-    
-    def init_grids(self):
-        '''
-        Initiate grid generator from ggrids.py
-
-        Returns
-        -------
-        gen_grids : Initiated generate_grids class.
-            Instantiate generate_grids with input/output 
-            directories and pass user inputs from __init__.
-
-        '''
-        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
-        gen_grids.file = self._file
-        gen_grids.grid = self._grid
-        gen_grids.res = self._res
-        gen_grids.ires = self._ires
-        return gen_grids
-    
+        
     def gen_remapped_files(self):
         '''
         Generate remapped files.
@@ -70,7 +52,12 @@ class driver(object):
         Depends on gen_weights & apply_weights methods.
         
         '''
-        file_list = self.init_grids()._file
+        
+        ## Instantiating the generate_grids
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
+        gen_grids.file = self._file
+        
+        file_list = gen_grids._file
         map_list = self.gen_weights()
         dir_path = get_dir_path(self._outdir)
         processes = []
@@ -150,9 +137,21 @@ class driver(object):
             List of Output SCRIP files.
 
         '''
-        list_in = self.init_grids().get_inp_scrip()
+        
+        ## Instantiating the generate_grids
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
+        gen_grids.file = self._file
+        gen_grids.ires = self._ires
+        
+        list_in = gen_grids.get_inp_scrip()
         list_in = list(pd.Series(list_in).unique())
-        list_out = self.init_grids().get_out_scrip()
+        
+        ## Instantiating the generate_grids
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
+        gen_grids.grid = self._grid
+        gen_grids.res = self._res
+        
+        list_out = gen_grids.get_out_scrip()
         list_out = list(pd.Series(list_out).unique())
         
         self.logger.info('\n=== gen_scrips done ===')
