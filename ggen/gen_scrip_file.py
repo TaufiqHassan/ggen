@@ -9,8 +9,24 @@ from ggen.gen_phys_grids import gen_pg
 from ggen.utils import get_dir_path
 
 class gen_scrip(object):
+    """
+    A class for generating a SCRIP file.
+
+    Args:
+        res (str): Resolution of the grid. Default is None.
+        nc (bool): Flag indicating whether to generate NetCDF output. Default is False.
+        path (str): Output file directory. Default is an empty string.
+        file (str): Input file name. Default is None.
+        fdir (str): Input grid file directory. Default is an empty string.
+        grid (str): Grid file name. Default is None.
+        xdim (str): Dimension name for longitude. Default is 'lon'.
+        ydim (str): Dimension name for latitude. Default is 'lat'.
+    """
     
     def __init__(self,**kwargs):
+        """
+        Initializes the gen_scrip object with the provided arguments.
+        """
         self.nResolution = kwargs.get('res', None)
         self.nc = kwargs.get('nc', False)
         self.path = kwargs.get('path', '')
@@ -23,6 +39,17 @@ class gen_scrip(object):
     
     @staticmethod
     def cartesian_to_latlon(dX,dY,dZ):
+        """
+        Converts Cartesian coordinates to latitude and longitude.
+
+        Args:
+            dX (ndarray): Array of x-coordinates.
+            dY (ndarray): Array of y-coordinates.
+            dZ (ndarray): Array of z-coordinates.
+
+        Returns:
+            tuple: A tuple containing the longitude and latitude arrays.
+        """
         dMag = dX**2 + dY**2 + dZ**2
         dMag = np.sqrt(dMag)
         
@@ -38,7 +65,15 @@ class gen_scrip(object):
         return lon_deg, lat_deg
         
     def get_scrip_file(self):
-        
+        """
+        Generates the SCRIP file.
+
+        Returns:
+            If nc is True:
+                str: Path to the generated NetCDF file.
+            If nc is False:
+                tuple: A tuple containing the corner longitude, corner latitude, center longitude, and center latitude arrays.
+        """ 
         if (self.file != None):
             if Path(str(self.file)).is_file():
                 data = xr.open_dataset(str(self.file))

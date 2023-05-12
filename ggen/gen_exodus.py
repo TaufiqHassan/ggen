@@ -6,8 +6,20 @@ from ggen.utils import get_dir_path
 
 
 class gen_exodus(object):
+    """
+    Class for generating an Exodus mesh optimized for Python
+    Original C++ codebase: https://github.com/ClimateGlobalChange/tempestremap
+    """
     
     def __init__(self, nResolution,**kwargs):
+        """
+        Initializes the gen_exodus object.
+
+        Args:
+            nResolution (int): The resolution of the mesh.
+            nc (bool, optional): Indicates whether to save the mesh as a netCDF file. Defaults to False.
+            path (str, optional): The path to save the mesh file. Defaults to an empty string.
+        """
         self.nResolution = nResolution
         self.nc = kwargs.get('nc', False)
         self.path = kwargs.get('path', '')
@@ -15,6 +27,18 @@ class gen_exodus(object):
     
     @staticmethod
     def insert_cs_subnode(ix0, ix1, alpha, nodes):
+        """
+        Inserts a subnode between two nodes along a common edge.
+
+        Args:
+            ix0 (int): Index of the first node.
+            ix1 (int): Index of the second node.
+            alpha (float): Parameter determining the position of the subnode between the two nodes.
+            nodes (list): List of nodes.
+
+        Returns:
+            int: Index of the inserted subnode.
+        """
         x0, y0, z0 = nodes[ix0]
         x1, y1, z1 = nodes[ix1]
         dX = x0 + (x1 - x0) * alpha
@@ -28,6 +52,18 @@ class gen_exodus(object):
         return len(nodes) - 1
     
     def generate_cs_multi_edge_vertices(self, ix0, ix1, nodes, edge):
+        """
+        Generates multiple edge vertices between two nodes.
+
+        Args:
+            ix0 (int): Index of the first node.
+            ix1 (int): Index of the second node.
+            nodes (list): List of nodes.
+            edge (list): List to store the generated edge vertices.
+
+        Returns:
+            list: The generated edge vertices.
+        """
         edge.clear()
         edge.append(ix0)
         for i in range(1, self.nResolution):
@@ -39,6 +75,20 @@ class gen_exodus(object):
         return edge
     
     def generate_faces_from_quad(self, edge0, edge1, edge2, edge3, nodes, vecFaces):
+        """
+        Generates faces from a quadrilateral.
+
+        Args:
+            edge0 (list): First edge vertices.
+            edge1 (list): Second edge vertices.
+            edge2 (list): Third edge vertices.
+            edge3 (list): Fourth edge vertices.
+            nodes (list): List of nodes.
+            vecFaces (list): List to store the generated faces.
+
+        Returns:
+            list: The generated faces.
+        """
         edge_bot = edge0
         for j in range(self.nResolution):
             if j != self.nResolution-1:
@@ -53,7 +103,13 @@ class gen_exodus(object):
         return vecFaces
     
     def gen_cs_mesh(self):
-
+        """
+        Generates the CS mesh using the specified resolution.
+    
+        Returns:
+            tuple or None: If `nc` is True, returns None. Otherwise, returns a tuple containing the coordinate
+            array, the fixed faces, and the original faces.
+        """
         # Generate corner points
         dInvDeltaX = 1.0 / np.sqrt(3.0)
         nodes=[

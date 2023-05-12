@@ -1,13 +1,35 @@
 import numpy as np
 
 class calculate_face_area_quadrature_method(object):
+    """
+    Calculate the face area using the quadrature method.
+    """
     
     def __init__(self, faces, nodes):
+        """
+        Initializes the calculate_face_area_quadrature_method object.
+
+        Args:
+            faces (ndarray): Array of face indices.
+            nodes (ndarray): Array of node coordinates.
+        """
         self.faces = faces
         self.nodes = nodes
     
     @staticmethod
     def refGetPoints(nCount,dG,dW):
+        """
+        Static method to obtain reference points and weights for the quadrature method.
+
+        Args:
+            nCount (int): Number of points.
+            dG (ndarray): Array to store the reference points.
+            dW (ndarray): Array to store the weights.
+
+        Returns:
+            dG (ndarray): Array of reference points.
+            dW (ndarray): Array of weights.
+        """
         # Check for valid range
         if nCount < 2:
             raise Exception(f"Invalid count ({nCount}): Minimum count 2")
@@ -49,6 +71,21 @@ class calculate_face_area_quadrature_method(object):
     
     @staticmethod
     def get_points(self,n_count, d_xi0, d_xi1, d_g, d_w):
+        """
+        Obtain the points and weights for quadrature integration.
+
+        Args:
+            self: The object itself.
+            n_count (int): Number of points.
+            d_xi0 (float): Lower limit of the integration range.
+            d_xi1 (float): Upper limit of the integration range.
+            d_g (ndarray): Array to store the reference points.
+            d_w (ndarray): Array to store the weights.
+
+        Returns:
+            d_g (ndarray): Array of reference points.
+            d_w (ndarray): Array of weights.
+        """
         d_g,d_w=self.refGetPoints(n_count, d_g, d_w)
         for i in range(n_count):
             d_g[i] = d_xi0 + 0.5 * (d_xi1 - d_xi0) * (d_g[i] + 1.0)
@@ -57,6 +94,19 @@ class calculate_face_area_quadrature_method(object):
     
     @staticmethod
     def get_triangle_jacobian(node1, node2, node3, dA, dB):
+        """
+        Calculate the Jacobian of a triangle defined by three nodes.
+
+        Args:
+            node1 (ndarray): Coordinates of the first node.
+            node2 (ndarray): Coordinates of the second node.
+            node3 (ndarray): Coordinates of the third node.
+            dA (float): Parameter A within the triangle.
+            dB (float): Parameter B within the triangle.
+
+        Returns:
+            dJacobian (ndarray): Array of Jacobian values for each triangle.
+        """
         dF = (1.0 - dB) * ((1.0 - dA) * node1 + dA * node2) + dB * node3
         dDaF = (1-dB)*(node2-node1)
         dDbF = -1*(1-dA)*node1-dA*node2+node3
@@ -91,6 +141,12 @@ class calculate_face_area_quadrature_method(object):
         return dJacobian
     
     def get_face_area(self):
+        """
+        Calculate the area of each face using the quadrature method.
+
+        Returns:
+            d_face_area (ndarray): Array of face areas.
+        """
         n_triangles = len(self.faces[0]) - 2
         n_order = 6
         dG = np.zeros(n_order)

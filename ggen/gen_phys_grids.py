@@ -1,12 +1,20 @@
+import logging
 import numpy as np
 import pandas as pd
 import xarray as xr
-import logging
 
 from ggen.gen_exodus import gen_exodus
 from ggen.utils import get_dir_path, group_duplicate_index
 
 class gen_pg(object):
+    """
+    Generates a pg2 metadata or grid file based on the C++ code from the tempestremap project.
+
+    Args:
+        nResolution (int): The resolution parameter.
+        nc (bool, optional): Flag indicating whether to generate a grid file in NetCDF format. Defaults to False.
+        path (str, optional): The path to save the grid file. Defaults to ''.
+    """
     
     def __init__(self, nResolution,**kwargs):
         self.nResolution = nResolution
@@ -16,6 +24,15 @@ class gen_pg(object):
     
     @staticmethod
     def get_faces(tmp):
+        """
+        Get the face values from a DataFrame.
+
+        Args:
+            tmp (pd.DataFrame): Input DataFrame containing face values.
+
+        Returns:
+            np.ndarray: Array of face values.
+        """
         fvals = np.zeros(len(tmp))
         cc=tmp[tmp.duplicated()].index.values
         ff=tmp[~tmp.duplicated()].index.values
@@ -43,12 +60,32 @@ class gen_pg(object):
     
     @staticmethod
     def forward_mapping(node0, node1, node2, node3, dA, dB):
+        """
+        Perform forward mapping based on node coordinates and interpolation factors.
+
+        Args:
+            node0 (np.ndarray): Node coordinates for the first node.
+            node1 (np.ndarray): Node coordinates for the second node.
+            node2 (np.ndarray): Node coordinates for the third node.
+            node3 (np.ndarray): Node coordinates for the fourth node.
+            dA (float): Interpolation factor for the first dimension.
+            dB (float): Interpolation factor for the second dimension.
+
+        Returns:
+            np.ndarray: Mapped node coordinates.
+        """
         nodeRef = (1.0 - dA) * (1.0 - dB) * node0 + dA * (1.0 - dB) * node1 + dA * dB * node2 + (1.0 - dA) * dB * node3
         dMag = np.sqrt(np.sum(nodeRef ** 2, axis=0))
         nodeRef = nodeRef / dMag[np.newaxis,:]
         return nodeRef
     
     def get_pg2(self):
+        """
+        Generates the pg2 metadata or grid file.
+
+        Returns:
+            tuple: A tuple containing the coordinate array, fixed faces, old faces, and a flag indicating success.
+        """
         nodes, ff, faces = gen_exodus(self.nResolution).gen_cs_mesh()
         faces = np.array(faces)
         nElements = len(faces)
