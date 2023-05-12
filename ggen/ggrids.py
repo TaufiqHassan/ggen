@@ -1,25 +1,25 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Feb 16 21:25:04 2022
-
-@author: thassan
-"""
-
-import xarray as xr
 from pathlib import Path
 import glob
-import os, logging
-from ggen.utils import get_dir_path, exec_shell
+import logging
 
-class get_res(object):
+from ggen.utils import get_dir_path, checker
+from ggen.gen_scrip_file import gen_scrip
+
+class generate_grids(object):
+    '''
+    generate_grids class handles all type of grid & SCRIP file generation.
+    Returns lists of SCRIP filenames.
+ 
+    '''
     def __init__(self, **kwargs):
         self._res = kwargs.get('res', None)
+        self._ires = kwargs.get('ires', None)
         self._file = kwargs.get('file', None)
-        self._grid_dir = kwargs.get('grid_dir', None)
-        self._data_dir = kwargs.get('data_dir', None)
-        self._bilin = kwargs.get('bilin', None)
+        self._infile = kwargs.get('infile', None)
         self._grid = kwargs.get('grid', None)
+        self._indir = kwargs.get('ind', '')
+        self._outdir = kwargs.get('out', '')
+        self.logger = logging.getLogger(str(get_dir_path(self._outdir))+'/log.ggen')
         
     @property
     def res(self):
@@ -34,120 +34,128 @@ class get_res(object):
         self._res.remove(0)
         
     @property
+    def inres(self):
+        return self.ires
+    
+    @inres.setter
+    def inres(self, val):
+        self._ires=[0]
+        ress = [x.strip() for x in val.split(',')]
+        for zz in range(len(ress)):
+            self._ires.append(ress[zz])
+        self._ires.remove(0)
+        
+    @property
+    def grid(self):
+        return self.file
+    
+    @grid.setter
+    def grid(self, val):
+        dirval = get_dir_path(self._indir) / str(val)
+        if len(glob.glob(str(val)))>0:
+            self._grid=glob.glob(str(val))
+        elif len(glob.glob(str(dirval)))>0:
+            self._grid=glob.glob(str(dirval))
+        elif self._grid != None:
+            self._grid=[0]
+            files = [x.strip() for x in str(val).split(',')]
+            for zz in range(len(files)):
+                file = get_dir_path(self._indir) / str(files[zz])
+                checker(str(file))
+                self._grid.append(file)
+            self._grid.remove(0)
+        
+    @property
     def file(self):
         return self.file
     
     @file.setter
     def file(self, val):
-        self._file=glob.glob(val)
-        if self._file==[]:
+        dirval = get_dir_path(self._indir) / str(val)
+        if len(glob.glob(str(val)))>0:
+            self._file=glob.glob(str(val))
+        elif len(glob.glob(str(dirval)))>0:
+            self._file=glob.glob(str(dirval))
+        else:
             self._file=[0]
+            files = [x.strip() for x in str(val).split(',')]
+            for zz in range(len(files)):
+                file = get_dir_path(self._indir) / str(files[zz])
+                checker(str(file))
+                self._file.append(file)
+            self._file.remove(0)
+    
+    @property
+    def infile(self):
+        return self.infile
+    
+    @infile.setter
+    def infile(self, val):
+        if not Path(str(val)).is_file():
+            val = get_dir_path(self._indir) / str(val)
+        checker(str(val))
+        self._infile=glob.glob(str(val))
+        if self._infile==[]:
+            self._infile=[0]
             files = [x.strip() for x in val.split(',')]
             for zz in range(len(files)):
-                self._file.append(files[zz])
-            self._file.remove(0)
-        
-    def get_out_scrip(self):
+                self._infile.append(files[zz])
+            self._infile.remove(0)
+    
+    def get_inp_scrip(self):
+        '''
+        Generate SCRIP files from input NetCDF files or resolution.
+        Input resolution:
+            For SE grids integer values (4, 30, 120 etc.)
+            For RLL grids use latitudexlongitude (64x128, 180x360 etc.)
+
+        Returns
+        -------
+        in_file_list : List
+            List of SCRIP file names for the input mesh.
+
+        '''
         in_file_list = []
-        for r in self._res:
-            if self._grid != None:
-                print('\nSpecifying grid file suppresses resolution',r)
-                in_file_list.append(get_grid(res=r, grid_dir=self._grid_dir,data_dir=self._data_dir,grid=self._grid).take_grid())
-            else:
-                if r[-3:] == 'pg2':
-                    in_file_list.append(get_grid(res=r, grid_dir=self._grid_dir,data_dir=self._data_dir).gen_grid_pg2())
-                else:
-                    in_file_list.append(get_grid(res=r, grid_dir=self._grid_dir,data_dir=self._data_dir,bilin=self._bilin).gen_grid())
-        return in_file_list
-                
-    def get_in_scrip(self):
-        out_file_list = []
-        for f in self._file:
-            out_file_list.append(get_grid(file=f,data_dir=self._data_dir).gen_scrip())
-        return out_file_list
-        
-
-class get_grid(object):
-    
-    def __init__(self, **kwargs):
-        self._res = kwargs.get('res', None)
-        self._file = kwargs.get('file', None)
-        self._grid_dir = kwargs.get('grid_dir', None)
-        self._data_dir = kwargs.get('data_dir', None)
-        self._bilin = kwargs.get('bilin', None)
-        self._grid = kwargs.get('grid', None)
-        
-    def take_grid(self):
-        self._data_dir=get_dir_path(self._data_dir,'data')
-        self._grid_dir=get_dir_path(self._grid_dir,'grid')
-        if self._grid_dir == Path('.').absolute():
-            self._grid_dir = self._data_dir
-        print('\nUsing the specified grid file:',self._grid)
-        if self._grid[-3:] != '.nc':
-            exec_shell(f'ConvertExodusToSCRIP --in {self._grid_dir}/{self._grid} --out {self._grid_dir}/{self._grid[:-2]}_SCRIP.nc')
-            return str(self._grid_dir)+'/'+self._grid[:-2]+'_SCRIP.nc'
-        else:    
-            return str(self._grid_dir)+'/'+self._grid
-
-    def gen_grid(self):
-        self._data_dir=get_dir_path(self._data_dir,'data')
-        self._grid_dir=get_dir_path(self._grid_dir,'grid')
-        if self._grid_dir == Path('.').absolute():
-            self._grid_dir = self._data_dir
-        if self._bilin != None:
-            penta_file = {'4':'ne4np4_pentagons_c100308.nc','16':'ne16np4_110512_pentagons.nc','30':'ne30np4_pentagons.20190501.nc','120':'ne120np4_pentagons.20190601.nc'}
-            return str(self._grid_dir)+'/'+penta_file[self._res]
+        if self._ires != None:
+            for r in self._ires:
+                self.logger.info('\nInput Resolution: '+str(r))
+                fname = gen_scrip(res=r,file=self._infile,path=self._outdir,fdir=self._indir,grid=self._grid,nc=True).get_scrip_file()
+                self.logger.info('\nGenerated '+str(fname))
+                in_file_list.append(str(fname))
         else:
-            exec_shell(f'GenerateCSMesh --alt --res {self._res} --file {self._grid_dir}/ne{self._res}.g')
-            print('\nGenerated ne'+self._res+'np4 grid in '+str(self._grid_dir))
-            exec_shell(f'ConvertExodusToSCRIP --in {self._grid_dir}/ne{self._res}.g --out {self._grid_dir}/ne{self._res}np4_SCRIP.nc')
-            print('\nGenerated ne'+self._res+'np4 SCRIP file in '+str(self._grid_dir))
-            return str(self._grid_dir)+str('/ne'+self._res+'np4_SCRIP.nc')
+            for f in self._file:
+                self.logger.info('\nSpecifying input file suppresses resolution.\n(Recommended for SE to RLL conversion)')
+                fname = gen_scrip(res=self._res,file=f,path=self._outdir,fdir=self._indir,grid=self._grid,nc=True).get_scrip_file()
+                self.logger.info('\nGenerated '+str(fname))
+                in_file_list.append(str(fname))
+        return in_file_list
     
-    def gen_grid_pg2(self):
-        self._data_dir=get_dir_path(self._data_dir,'data')
-        self._grid_dir=get_dir_path(self._grid_dir,'grid')
-        if self._grid_dir == Path('.').absolute():
-            self._grid_dir = self._data_dir
-        exec_shell(f'GenerateCSMesh --alt --res {self._res[:-3]} --file {self._grid_dir}/ne{self._res[:-3]}.g')
-        exec_shell(f'GenerateVolumetricMesh --in {self._grid_dir}/ne{self._res[:-3]}.g --out {self._grid_dir}/ne{self._res}.g --np 2 --uniform')
-        print('\nGenerated ne'+self._res+' grid in '+str(self._grid_dir))
-        exec_shell(f'ConvertExodusToSCRIP --in {self._grid_dir}/ne{self._res}.g --out {self._grid_dir}/ne{self._res}_SCRIP.nc')
-        print('\nGenerated ne'+self._res+' SCRIP file in '+str(self._grid_dir))
-        return str(self._grid_dir)+str('/ne'+self._res+'_SCRIP.nc')
-        
-    def gen_scrip(self):
-        self._data_dir=get_dir_path(self._data_dir,'data')
-        self._grid_dir=get_dir_path(self._grid_dir,'grid')
-        if self._grid_dir == Path('.').absolute():
-            self._grid_dir = self._data_dir
-        se_grids = {96:'ne4np4',1536:'ne16np4',5400:'ne30np4',86400:'ne120np4',384:'ne4pg2',6144:'ne16pg2',21600:'ne30pg2',345600:'ne120pg2'}
-        data = xr.open_dataset(self._file)
-        try:
-            lat = data.dims['lat']
-            lon = data.dims['lon']
-            if not os.path.exists(str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc'):
-                exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{lat}x{lon}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
-                print('\nGenerated '+str(lat)+'x'+str(lon)+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
-            else:
-                logger = logging.getLogger(str(self._data_dir)+'/log.ggen')
-                logger.info('\n'+str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc already exists.\nUsing it!')
-            return str(self._grid_dir)+'/'+str(lat)+'x'+str(lon)+'_SCRIP.nc'
-        except:
-            try:
-                ncol = data.dims['ncol']
-                se_val = se_grids[ncol]
-                if not os.path.exists(str(self._grid_dir)+'/'+se_val+'_SCRIP.nc'):
-                    exec_shell(f'ncks --rgr infer --rgr scrip={self._grid_dir}/{se_val}_SCRIP.nc {self._file} {self._grid_dir}/foo.nc',inp='o')
-                    print('\nGenerated '+se_val+'_SCRIP.nc inferred from '+self._file+' in '+str(self._grid_dir))
-                else:
-                    logger = logging.getLogger(str(self._data_dir)+'/log.ggen')
-                    logger.info('\n'+str(self._grid_dir)+'/'+se_val+'_SCRIP.nc already exists.\nUsing it!')
-                return str(self._grid_dir)+'/'+se_val+'_SCRIP.nc'
-            except KeyError:
-                print('\nMake sure the file ',self._file,' has a lat/lon or ncol dimension.')
+    def get_out_scrip(self):
+        '''
+        Generate SCRIP files from output grid file or resolution.
+        Output resolution:
+            For SE grids integer values (4, 30, 120 etc.)
+            For RLL grids use latitudexlongitude (64x128, 180x360 etc.)
 
+        Returns
+        -------
+        out_file_list : List
+            List of SCRIP file names for the output mesh.
 
-  
-
+        '''
+        out_file_list = []
+        if self._grid != None:
+            for g in self._grid:
+                self.logger.info('\nUsing specified grid file: '+ g)
+                self.logger.info('\nSpecifying grid file suppresses resolution.')
+                fname = gen_scrip(res=self._res,file=self._file,path=self._outdir,fdir=self._indir,grid=g,nc=True).get_scrip_file()
+                self.logger.info('\nGenerated '+str(fname))
+                out_file_list.append(str(fname))
+        else:
+            for r in self._res:
+                self.logger.info('\nOutput Resolution: '+r)
+                fname = gen_scrip(res=r,file=self._infile,path=self._outdir,fdir=self._indir,grid=self._grid,nc=True).get_scrip_file()
+                self.logger.info('\nGenerated '+str(fname))
+                out_file_list.append(str(fname))
+        return out_file_list
 
