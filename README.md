@@ -352,3 +352,13 @@ python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/t
 Ullrich, Paul A and Taylor, Mark A (2015). 
 Arbitrary-order conservative and consistent remapping and a theory of linear maps: Part I. 
 Monthly Weather Review, 143, 2419-2440.
+
+<a id="2">[2]</a> 
+Ullrich, Paul A and Devendran, Dharshi and Johansen, Hans (2016). 
+Arbitrary-order conservative and consistent remapping and a theory of linear maps: Part II.
+Monthly Weather Review, 144, 1529-1549.
+
+<a id="3">[3]</a> 
+Zender, Charles S (2008). 
+Analysis of self-describing gridded geoscience data with netCDF Operators (NCO).
+Environmental Modelling & Software, 23, 1338-1342
