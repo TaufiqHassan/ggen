@@ -1,14 +1,12 @@
 ## Grid Generator (ggen)
 
-Generates Spectral Element (SE) and Regular Latitude Longitude (RLL) grid meshes and performs conservative remapping between list of meshes. Works with `tempestremap` and `nco` under the hood. Logs are appended to log.ggen.
+Generates Spectral Element (SE) and Regular Latitude Longitude (RLL) grid meshes and performs conservative remapping between list of meshes with any resolution. Logs are appended to log.ggen. This is part of an emission pre-processor.
 
 Usage
 -----
 
-```console
-python ggen/ggen.py -h
+``python ggen/ggen.py -h``
 ```
-```bash
 usage: ggen.py [-h] [-r R] [-f F] [-ind IND] [-out OUT] [-gf GF] [-mf MF]
                [-sd] [-scrip] [-mp] [-ir IR]
 
@@ -26,11 +24,6 @@ optional arguments:
   -mp         Multiprocessing
   -ir IR      Input resolutions (e.g. 16, 30, 64x128, 180x360)
 ```
-
-General Structure
------------------
-
-![ggen schematic](./ggen.png)
 
 Installation
 ------------
@@ -132,233 +125,45 @@ Finished in 4.17 second(s)
 python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
 ```
 
-<details><summary>Click to view long log file</summary>
-<p>
-
-#### log.ggen output
+Example `log.ggen` output
 
 ```
-################################## Process Started ##################################
+Generated ne4pg2 grid in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-[cmd]: python ggen.py -r 16,32,180x360 -f *bc* -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
+Generated ne4pg2 SCRIP file in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
+Using fv2fv_flx
 
-=== driver init done ===
+Generated map_384x576_ne4pg2.nc mapping file in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Specifying input file suppresses resolution.
-(Recommended for SE to RLL conversion)
+Using fv2fv_flx
 
-Generating RLL grid metadata
+Using fv2fv_flx
 
-Creating SCRIP file RLL384x576_SCRIP.nc in /compyfs/hass877/e3sm_scratch/ggen_test
+Using fv2fv_flx
 
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
+Using fv2fv_flx
 
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
+Using fv2fv_flx
 
-Specifying input file suppresses resolution.
-(Recommended for SE to RLL conversion)
-/compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc already exists!
- Using it.
+Using fv2fv_flx
 
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
+Using fv2fv_flx
 
-Output Resolution: 16
+Generated remapped cmip6_mam4_num_a2_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Generating exodus metadata
+Generated remapped cmip6_mam4_so4_a1_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Generating pg2 metadata
+Generated remapped cmip6_mam4_so4_a2_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Creating SCRIP file ne16pg2_SCRIP.nc in /compyfs/hass877/e3sm_scratch/ggen_test
+Generated remapped cmip6_mam4_so2_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/ne16pg2_SCRIP.nc
+Generated remapped cmip6_mam4_num_a1_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/ne16pg2_SCRIP.nc
+Generated remapped cmip6_mam4_bc_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Output Resolution: 32
+Generated remapped cmip6_mam4_pom_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
 
-Generating exodus metadata
-
-Generating pg2 metadata
-
-Creating SCRIP file ne32pg2_SCRIP.nc in /compyfs/hass877/e3sm_scratch/ggen_test
-
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/ne32pg2_SCRIP.nc
-
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/ne32pg2_SCRIP.nc
-
-Output Resolution: 180x360
-
-Generating RLL grid metadata
-
-Creating SCRIP file RLL180x360_SCRIP.nc in /compyfs/hass877/e3sm_scratch/ggen_test
-
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/RLL180x360_SCRIP.nc
-
-Generated /compyfs/hass877/e3sm_scratch/ggen_test/RLL180x360_SCRIP.nc
-
-=== gen_scrips done ===
-
-Input SCRIP:/compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
-Output SCRIP:/compyfs/hass877/e3sm_scratch/ggen_test/ne16pg2_SCRIP.nc
-
-[cmd]: ncremap --alg_typ=fv2fv_flx --src_grd=/compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc --dst_grd=/compyfs/hass877/e3sm_scratch/ggen_test/ne16pg2_SCRIP.nc --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne16pg2.nc
-
-Grid(src): /compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
-Grid(dst): /compyfs/hass877/e3sm_scratch/ggen_test/ne16pg2_SCRIP.nc
-
-
-Generated map_RLL384x576_ne16pg2.nc mapping file in /compyfs/hass877/e3sm_scratch/ggen_test
-
-Input SCRIP:/compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
-Output SCRIP:/compyfs/hass877/e3sm_scratch/ggen_test/ne32pg2_SCRIP.nc
-
-[cmd]: ncremap --alg_typ=fv2fv_flx --src_grd=/compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc --dst_grd=/compyfs/hass877/e3sm_scratch/ggen_test/ne32pg2_SCRIP.nc --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne32pg2.nc
-
-Grid(src): /compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
-Grid(dst): /compyfs/hass877/e3sm_scratch/ggen_test/ne32pg2_SCRIP.nc
-
-
-Generated map_RLL384x576_ne32pg2.nc mapping file in /compyfs/hass877/e3sm_scratch/ggen_test
-
-Input SCRIP:/compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
-Output SCRIP:/compyfs/hass877/e3sm_scratch/ggen_test/RLL180x360_SCRIP.nc
-
-[cmd]: ncremap --alg_typ=fv2fv_flx --src_grd=/compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc --dst_grd=/compyfs/hass877/e3sm_scratch/ggen_test/RLL180x360_SCRIP.nc --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_RLL180x360.nc
-
-Grid(src): /compyfs/hass877/e3sm_scratch/ggen_test/RLL384x576_SCRIP.nc
-Grid(dst): /compyfs/hass877/e3sm_scratch/ggen_test/RLL180x360_SCRIP.nc
-
-
-Generated map_RLL384x576_RLL180x360.nc mapping file in /compyfs/hass877/e3sm_scratch/ggen_test
-
-=== gen_weights done ===
-
-Applied multiprocessing.
-
-Applied multiprocessing.
-
-Applying /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne16pg2.nc on /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc
-
-[cmd]: ncremap --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne16pg2.nc /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_elev_1850-2014_c20191108_RLL384x576_ne16pg2.nc
-
-
-Applied multiprocessing.
-
-Applying /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne16pg2.nc on /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc
-
-[cmd]: ncremap --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne16pg2.nc /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_surf_1850-2014_c20191108_RLL384x576_ne16pg2.nc
-
-
-Applied multiprocessing.
-
-Applying /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne32pg2.nc on /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc
-
-[cmd]: ncremap --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne32pg2.nc /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_elev_1850-2014_c20191108_RLL384x576_ne32pg2.nc
-
-
-Applied multiprocessing.
-
-Applying /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne32pg2.nc on /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc
-
-[cmd]: ncremap --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne32pg2.nc /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_surf_1850-2014_c20191108_RLL384x576_ne32pg2.nc
-
-
-Applied multiprocessing.
-
-Applying /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_RLL180x360.nc on /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc
-
-[cmd]: ncremap --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_RLL180x360.nc /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_elev_1850-2014_c20191108_RLL384x576_RLL180x360.nc
-
-
-Applying /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_RLL180x360.nc on /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc
-
-[cmd]: ncremap --map=/compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_RLL180x360.nc /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_surf_1850-2014_c20191108_RLL384x576_RLL180x360.nc
-
-Input #00: /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc
-Map/Wgt  : /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne16pg2.nc
-
-
-Generated remapped file /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_surf_1850-2014_c20191108_RLL384x576_ne16pg2.nc
-
-=== apply_weights done ===
-Input #00: /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc
-Map/Wgt  : /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne32pg2.nc
-
-
-Generated remapped file /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_surf_1850-2014_c20191108_RLL384x576_ne32pg2.nc
-
-=== apply_weights done ===
-Input #00: /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_surf_1850-2014_c20191108.nc
-Map/Wgt  : /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_RLL180x360.nc
-
-
-Generated remapped file /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_surf_1850-2014_c20191108_RLL384x576_RLL180x360.nc
-
-=== apply_weights done ===
-Input #00: /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc
-Map/Wgt  : /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne16pg2.nc
-
-
-Generated remapped file /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_elev_1850-2014_c20191108_RLL384x576_ne16pg2.nc
-
-=== apply_weights done ===
-Input #00: /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc
-Map/Wgt  : /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_ne32pg2.nc
-
-
-Generated remapped file /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_elev_1850-2014_c20191108_RLL384x576_ne32pg2.nc
-
-=== apply_weights done ===
-Input #00: /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/cmip6_mam4_bc_a4_elev_1850-2014_c20191108.nc
-Map/Wgt  : /compyfs/hass877/e3sm_scratch/ggen_test/map_RLL384x576_RLL180x360.nc
-
-
-Generated remapped file /compyfs/hass877/e3sm_scratch/ggen_test/cmip6_mam4_bc_a4_elev_1850-2014_c20191108_RLL384x576_RLL180x360.nc
-
-=== apply_weights done ===
-
-=== gen_remapped_files done ===
-
-Finished in 348.79 second(s)
-
-################################## Process Finished ##################################
-######################################################################################
+Generated remapped cmip6_mam4_num_a4_surf_1850-2014_c20191108_384x576_ne4pg2.nc in /compyfs/www/hass877/share/emis_data/DECK120_to_SE
+Finished in 588.88 second(s)
 ```
-
-</p>
-</details>
-
-### Submit as a batch job
-
-Example batch script
-
-```bash
-#!/bin/bash -l
-#SBATCH --job-name=ggen
-#SBATCH --output=ggen.o%j
-#SBATCH --account=project
-#SBATCH --nodes=1
-#SBATCH --time=00:30:00
-#SBATCH --partition=short
-
-source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
-python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
-```
-
-### References
-
-<a id="1">[1]</a> 
-Ullrich, Paul A and Taylor, Mark A (2015). 
-Arbitrary-order conservative and consistent remapping and a theory of linear maps: Part I. 
-Monthly Weather Review, 143, 2419-2440.
-
-<a id="2">[2]</a> 
-Ullrich, Paul A and Devendran, Dharshi and Johansen, Hans (2016). 
-Arbitrary-order conservative and consistent remapping and a theory of linear maps: Part II.
-Monthly Weather Review, 144, 1529-1549.
-
-<a id="3">[3]</a> 
-Zender, Charles S (2008). 
-Analysis of self-describing gridded geoscience data with netCDF Operators (NCO).
-Environmental Modelling & Software, 23, 1338-1342
