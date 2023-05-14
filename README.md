@@ -55,18 +55,18 @@ And then activate genv to use ggen
 
 `conda activate genv`
 
-Example
--------
+Examples
+--------
 
 ### General use (from command line)
 
-```console
+```bash
 python ggen.py -r <output resolutions> -f <input file names> -ind /input/file/directory -out /output/file/directory
 ```
 
 Example `log.ggen` output
 
-```
+```bash
 ################################## Process Started ##################################
 
 [cmd]: python ggen.py -r 30 -f bc_emission_def.nc -ind /Users/hass877/Work/data_analysis -out /Users/hass877/Work/data_analysis
@@ -134,7 +134,7 @@ Finished in 4.17 second(s)
 
 ### Using muliprocessing and wildcards
 
-```console
+```bash
 python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
 ```
 
@@ -143,7 +143,7 @@ python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/t
 
 #### log.ggen output
 
-```
+```bash
 ################################## Process Started ##################################
 
 [cmd]: python ggen.py -r 16,32,180x360 -f *bc* -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
