@@ -6,7 +6,7 @@ Usage
 -----
 
 ```console
-python ggen/ggen.py -h
+python ggen.py -h
 ```
 ```bash
 usage: ggen.py [-h] [-r R] [-f F] [-ind IND] [-out OUT] [-gf GF] [-mf MF]
@@ -37,9 +37,15 @@ Installation
 
 Works with e3sm_unifed environment
 
-On compy: `source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh`
+On compy: 
+```bash
+source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
+```
 
-On Cori: `source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_cori-haswell.sh`
+On Cori: 
+```bash
+source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_cori-haswell.sh
+```
 
 For others, use the YAML file provided to create a virtual conda enviroment (genv)
 
