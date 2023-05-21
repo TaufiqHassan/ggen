@@ -85,7 +85,7 @@ class gen_scrip(object):
             dir_path = get_dir_path(self.path)
             fname = dir_path / str('RLL'+str(n_lat)+'x'+str(n_lon)+'_SCRIP.nc')
             if not Path(fname).is_file():
-                coord, modf, faces, n_lat, n_lon, rank = gen_RLL(res=self.nResolution,fdir=self.fdir,file=self.file).get_rll()
+                coord, modf, faces, n_lat, n_lon, rank = gen_RLL(res=self.nResolution,fdir=self.fdir,file=self.file,xdim=self.xdim,ydim=self.ydim).get_rll()
                 dims = np.array([n_lon, n_lat],dtype=np.int32)
             else:
                 self.logger.info(str(fname)+' already exists!\n Using it.')
@@ -109,7 +109,7 @@ class gen_scrip(object):
             dir_path = get_dir_path(self.path)
             fname = dir_path / str('RLL'+str(n_lat)+'x'+str(n_lon)+'_SCRIP.nc')
             if not Path(fname).is_file():
-                coord, modf, faces, n_lat, n_lon, rank = gen_RLL(res=self.nResolution,fdir=self.fdir,file=self.file).get_rll()
+                coord, modf, faces, n_lat, n_lon, rank = gen_RLL(res=self.nResolution,fdir=self.fdir,file=self.file,xdim=self.xdim,ydim=self.ydim).get_rll()
                 dims = np.array([n_lon, n_lat],dtype=np.int32)
             else:
                 self.logger.info(str(fname)+' already exists!\n Using it.')

@@ -25,6 +25,7 @@ setup(
     version='1.0.0',
     description="Package for generating grid meshes and performing conservative remapping",
     long_description=readme,
+    long_description_content_type='text/markdown',
     author="Taufiq Hassan",
     author_email='taufiq.hassan@pnnl.gov',
     url='https://github.com/TaufiqHassan/ggen',
