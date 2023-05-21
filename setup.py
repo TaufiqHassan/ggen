@@ -22,7 +22,7 @@ requirements = [
 
 setup(
     name='ggen',
-    version='1.0.0',
+    version='1.1.0',
     description="Package for generating grid meshes and performing conservative remapping",
     long_description=readme,
     long_description_content_type='text/markdown',
