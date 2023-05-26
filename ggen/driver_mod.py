@@ -194,6 +194,8 @@ class driver(object):
             data=xr.open_dataset(str(fname))
             data1=data.expand_dims('lev',axis=1)
             data2 = data1.assign_coords(lev=('lev',lev))
+            data2['lat_vertices'] = data2['lat_vertices'].isel(lev=0).drop('lev')
+            data2['lon_vertices'] = data2['lon_vertices'].isel(lev=0).drop('lev')
             data2.load().to_netcdf(str(fname).replace('.nc','_lev.nc'),format="NETCDF3_64BIT")
             
         self.logger.info('\n=== apply_weights done ===')
