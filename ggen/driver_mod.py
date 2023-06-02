@@ -40,6 +40,8 @@ class driver(object):
         self._mf = kwargs.get('mapfile', None)
         self._sdim = kwargs.get('sdim', None)
         self._mp = kwargs.get('mp', None)
+        self.xdim = kwargs.get('xdim', 'lon')
+        self.ydim = kwargs.get('ydim', 'lat')
         self.logger = logging.getLogger(str(get_dir_path(self._outdir))+'/log.ggen')
         
         self.logger.info('\n=== driver init done ===')
@@ -54,7 +56,7 @@ class driver(object):
         '''
         
         ## Instantiating the generate_grids
-        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir,xdim=self.xdim,ydim=self.ydim)
         gen_grids.file = self._file
         
         file_list = gen_grids._file
@@ -143,7 +145,7 @@ class driver(object):
         '''
         
         ## Instantiating the generate_grids
-        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir,xdim=self.xdim,ydim=self.ydim)
         gen_grids.file = self._file
         gen_grids.ires = self._ires
         
@@ -151,7 +153,7 @@ class driver(object):
         list_in = list(pd.Series(list_in).unique())
         
         ## Instantiating the generate_grids
-        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir,xdim=self.xdim,ydim=self.ydim)
         gen_grids.grid = self._grid
         gen_grids.res = self._res
         
