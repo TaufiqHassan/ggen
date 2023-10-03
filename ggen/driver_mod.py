@@ -69,7 +69,8 @@ class driver(object):
             processes = []
             for mapfile, file in product(map_list,filelist):
                 if self._mp==None:
-                    self.apply_weights(self,str(mapfile),str(file),dir_path)
+                    fname = self.apply_weights(self,str(mapfile),str(file),dir_path)
+                    return fname
                 else:
                     self.logger.info('\nApplied multiprocessing.')
                     p = mp.Process(target=self.apply_weights, args=[self,str(mapfile),str(file),dir_path])
@@ -154,8 +155,10 @@ class driver(object):
         
         ## Instantiating the generate_grids
         gen_grids = generate_grids(ind=self._indir,out=self._outdir,xdim=self.xdim,ydim=self.ydim)
-        gen_grids.grid = self._grid
-        gen_grids.res = self._res
+        if self._grid != None:
+            gen_grids.grid = self._grid
+        else:
+            gen_grids.res = self._res
         
         list_out = gen_grids.get_out_scrip()
         list_out = list(pd.Series(list_out).unique())
@@ -201,5 +204,6 @@ class driver(object):
             data2.load().to_netcdf(str(fname).replace('.nc','_lev.nc'),format="NETCDF3_64BIT")
             
         self.logger.info('\n=== apply_weights done ===')
+        return fname
                             
             
