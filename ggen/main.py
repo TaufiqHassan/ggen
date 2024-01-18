@@ -20,12 +20,14 @@ def main():
     parser.add_argument("-f", help="File Names (input netcdf file names). Use ' ' when using wildcards.")
     parser.add_argument("-ind", help="Input directory (current directory is default).", default=None)
     parser.add_argument("-out", help="Output directory (current directory is default).", default=None)
-    parser.add_argument("-gf", help="Insert grid file.", default=None)
+    parser.add_argument("-gf", help="Insert output grid file.", default=None)
+    parser.add_argument("-igf", help="Insert input grid file.", default=None)
     parser.add_argument("-mf", help="Insert map file.", default=None)
     parser.add_argument("-sd", help="Add a sigleton lev dim.",action='store_true', default=None)
     parser.add_argument("-scrip", help="Generate SCRIP files",action='store_true', default=None)
     parser.add_argument("-mp", help="Multiprocessing",action='store_true', default=None)
     parser.add_argument("-ir", help="Input resolutions (e.g. 16, 30, 64x128, 180x360)", default=None)
+    parser.add_argument("-algo", help="Remapping algorithm", default='fv2fv_flx')
     
     args = parser.parse_args()
     res = args.r
@@ -33,11 +35,13 @@ def main():
     indir = args.ind
     outdir = args.out
     grid_file = args.gf
+    ingrid_file = args.igf
     map_file = args.mf
     sdim = args.sd
     mp = args.mp
     scrip = args.scrip
     in_res = args.ir
+    algo = args.algo
     
     logging.basicConfig(filename=str(outdir)+'/log.ggen', level=logging.INFO, format='%(message)s')
 
@@ -49,9 +53,9 @@ def main():
     logging.info('\n[cmd]: python ' + cmd+ '\n')
     
     if scrip:
-        gen_scrip(res=res, file=file, path=outdir, fdir=indir, grid=grid_file, nc=True).get_scrip_file()
+        gen_scrip(res=res, file=file, path=outdir, fdir=indir, grid=grid_file, ingrid=ingrid_file, nc=True).get_scrip_file()
     else:
-        driver(res=res, file=file, ind=indir, out=outdir, grid=grid_file, mapfile=map_file, sdim=sdim, mp=mp, ires=in_res).gen_remapped_files()
+        driver(res=res, file=file, ind=indir, out=outdir, grid=grid_file, ingrid=ingrid_file, mapfile=map_file, sdim=sdim, mp=mp, ires=in_res, algo=algo).gen_remapped_files()
 
     finish = time.perf_counter()
 
@@ -61,4 +65,3 @@ def main():
     
     print(f'\nFinished in {round(finish-start, 2)} second(s)')
     
-

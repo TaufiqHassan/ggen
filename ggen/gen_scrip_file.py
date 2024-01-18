@@ -33,6 +33,7 @@ class gen_scrip(object):
         self.file = kwargs.get('file', None)
         self.fdir = kwargs.get('fdir', '')
         self.grid = kwargs.get('grid', None)
+        self.ingrid = kwargs.get('ingrid', None)
         self.xdim = kwargs.get('xdim', 'lon')
         self.ydim = kwargs.get('ydim', 'lat')
         self.logger = logging.getLogger(str(get_dir_path(self.path))+'/log.ggen')
@@ -73,8 +74,21 @@ class gen_scrip(object):
                 str: Path to the generated NetCDF file.
             If nc is False:
                 tuple: A tuple containing the corner longitude, corner latitude, center longitude, and center latitude arrays.
-        """ 
-        if (self.file != None):
+        """
+        if (self.ingrid != None):
+            dir_path = get_dir_path(self.path)
+            fname = dir_path / str(str(self.ingrid)[:-3]+'.nc')
+            if not Path(fname).is_file():
+                dir_path = get_dir_path(self.fdir)
+                fname = dir_path / str(str(self.ingrid)[:-3]+'.nc')
+                data = xr.open_dataset(dir_path / str(self.ingrid))
+                coord, modf, faces = data['coord'].values, data['connect1'].values, data['connect1'].values -1
+                rank = 1
+                dims = np.array([1],dtype=np.int32)
+            else:
+                self.logger.info(str(fname)+' already exists!\n Using it.')
+                return dir_path / str(str(self.ingrid)) 
+        elif (self.file != None):
             if Path(str(self.file)).is_file():
                 data = xr.open_dataset(str(self.file))
             else:
@@ -85,7 +99,7 @@ class gen_scrip(object):
             dir_path = get_dir_path(self.path)
             fname = dir_path / str('RLL'+str(n_lat)+'x'+str(n_lon)+'_SCRIP.nc')
             if not Path(fname).is_file():
-                coord, modf, faces, n_lat, n_lon, rank = gen_RLL(res=self.nResolution,fdir=self.fdir,file=self.file).get_rll()
+                coord, modf, faces, n_lat, n_lon, rank = gen_RLL(res=self.nResolution,fdir=self.fdir,file=self.file,xdim=self.xdim,ydim=self.ydim).get_rll()
                 dims = np.array([n_lon, n_lat],dtype=np.int32)
             else:
                 self.logger.info(str(fname)+' already exists!\n Using it.')
@@ -109,7 +123,7 @@ class gen_scrip(object):
             dir_path = get_dir_path(self.path)
             fname = dir_path / str('RLL'+str(n_lat)+'x'+str(n_lon)+'_SCRIP.nc')
             if not Path(fname).is_file():
-                coord, modf, faces, n_lat, n_lon, rank = gen_RLL(res=self.nResolution,fdir=self.fdir,file=self.file).get_rll()
+                coord, modf, faces, n_lat, n_lon, rank = gen_RLL(res=self.nResolution,fdir=self.fdir,file=self.file,xdim=self.xdim,ydim=self.ydim).get_rll()
                 dims = np.array([n_lon, n_lat],dtype=np.int32)
             else:
                 self.logger.info(str(fname)+' already exists!\n Using it.')
@@ -140,21 +154,19 @@ class gen_scrip(object):
             center = center + corner
         center = center / n_corners
         dMag = np.sqrt(center[0]**2 + center[1]**2 + center[2]**2)
+
         center[0] /= dMag
         center[1] /= dMag
         center[2] /= dMag
-        centerLon,centerLat = self.cartesian_to_latlon(center[0], center[1], center[2])
-            
+        centerLon,centerLat = self.cartesian_to_latlon(center[0], center[1], center[2])   
+
         for j in range(n_corners):
             cornerLon[:,j] = np.where(cornerLat[:,j]==90,centerLon,cornerLon[:,j])
             cornerLon[:,j] = np.where(cornerLat[:,j]==-90,centerLon,cornerLon[:,j])
             londiff = centerLon - cornerLon[:,j]
             cornerLon[:,j] = np.where(londiff>180,cornerLon[:,j] + 360,cornerLon[:,j])
             cornerLon[:,j] = np.where(londiff<-180,cornerLon[:,j] - 360,cornerLon[:,j])
-        if rank > 1:
-            cornerLon[:,n_corners-1] = cornerLon[:,n_corners-2]
-            cornerLat[:n_lon,n_corners-1] = cornerLat[:n_lon,n_corners-2]
-            cornerLat[-n_lon:,n_corners-1] = cornerLat[-n_lon:,n_corners-2]
+
         if self.nc == True:
             data_vars = {'grid_area':(['grid_size'], area, {'units': 'radians^2', 'long_name':'grid_area'}),
                         'grid_center_lat':(['grid_size'], centerLat, {'units': 'degrees', 'long_name':'grid_center_lat'}),

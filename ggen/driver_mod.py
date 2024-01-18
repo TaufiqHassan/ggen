@@ -35,11 +35,15 @@ class driver(object):
         self._file = kwargs.get('file', None)
         self._infile = kwargs.get('infile', None)
         self._grid = kwargs.get('grid', None)
+        self._ingrid = kwargs.get('ingrid', None)
         self._indir = kwargs.get('ind', '')
         self._outdir = kwargs.get('out', '')
         self._mf = kwargs.get('mapfile', None)
         self._sdim = kwargs.get('sdim', None)
         self._mp = kwargs.get('mp', None)
+        self.xdim = kwargs.get('xdim', 'lon')
+        self.ydim = kwargs.get('ydim', 'lat')
+        self.algo = kwargs.get('algo', 'fv2fv_flx')
         self.logger = logging.getLogger(str(get_dir_path(self._outdir))+'/log.ggen')
         
         self.logger.info('\n=== driver init done ===')
@@ -54,7 +58,7 @@ class driver(object):
         '''
         
         ## Instantiating the generate_grids
-        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir,xdim=self.xdim,ydim=self.ydim)
         gen_grids.file = self._file
         
         file_list = gen_grids._file
@@ -67,7 +71,8 @@ class driver(object):
             processes = []
             for mapfile, file in product(map_list,filelist):
                 if self._mp==None:
-                    self.apply_weights(self,str(mapfile),str(file),dir_path)
+                    fname = self.apply_weights(self,str(mapfile),str(file),dir_path)
+                    return fname
                 else:
                     self.logger.info('\nApplied multiprocessing.')
                     p = mp.Process(target=self.apply_weights, args=[self,str(mapfile),str(file),dir_path])
@@ -111,11 +116,10 @@ class driver(object):
                     self.logger.info('Output SCRIP:'+out_scrip)
                     ins=str(in_scrip).split('/')[-1].split('_')[0]
                     outs=str(out_scrip).split('/')[-1].split('_')[0]
-                    algo = 'fv2fv_flx'
                     dir_path = get_dir_path(self._outdir)
                     fname = dir_path / str('map_'+ins+'_'+outs+'.nc')
                     if not Path(fname).is_file():
-                        rc = exec_shell(f'ncremap --alg_typ={algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={fname}')
+                        rc = exec_shell(f'ncremap --alg_typ={self.algo} --src_grd={in_scrip} --dst_grd={out_scrip} --map={fname}')
                         if rc == 0:
                             self.logger.info('\nGenerated map_'+ins+'_'+outs+'.nc mapping file in '+str(dir_path))
                         else:
@@ -143,17 +147,23 @@ class driver(object):
         '''
         
         ## Instantiating the generate_grids
-        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
-        gen_grids.file = self._file
-        gen_grids.ires = self._ires
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir,xdim=self.xdim,ydim=self.ydim)
         
+        if self._ingrid != None:
+            gen_grids.ingrid = self._ingrid
+        else:
+            gen_grids.file = self._file
+            gen_grids.ires = self._ires
+ 
         list_in = gen_grids.get_inp_scrip()
         list_in = list(pd.Series(list_in).unique())
         
         ## Instantiating the generate_grids
-        gen_grids = generate_grids(ind=self._indir,out=self._outdir)
-        gen_grids.grid = self._grid
-        gen_grids.res = self._res
+        gen_grids = generate_grids(ind=self._indir,out=self._outdir,xdim=self.xdim,ydim=self.ydim)
+        if self._grid != None:
+            gen_grids.grid = self._grid
+        else:
+            gen_grids.res = self._res
         
         list_out = gen_grids.get_out_scrip()
         list_out = list(pd.Series(list_out).unique())
@@ -194,8 +204,11 @@ class driver(object):
             data=xr.open_dataset(str(fname))
             data1=data.expand_dims('lev',axis=1)
             data2 = data1.assign_coords(lev=('lev',lev))
+            data2['lat_vertices'] = data2['lat_vertices'].isel(lev=0).drop('lev')
+            data2['lon_vertices'] = data2['lon_vertices'].isel(lev=0).drop('lev')
             data2.load().to_netcdf(str(fname).replace('.nc','_lev.nc'),format="NETCDF3_64BIT")
             
         self.logger.info('\n=== apply_weights done ===')
+        return fname
                             
             

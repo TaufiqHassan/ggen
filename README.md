@@ -1,6 +1,10 @@
 ## Grid Generator (ggen)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7931486.svg)](https://doi.org/10.5281/zenodo.7931486)
+
 Generates Spectral Element (SE) and Regular Latitude Longitude (RLL) grid meshes and performs conservative remapping between list of meshes. Works with `tempestremap` and `nco` under the hood. Logs are appended to log.ggen.
+
+**Contact:** Taufiq Hassan (taufiq.hassan@pnnl.gov)
 
 Usage
 -----
@@ -15,16 +19,17 @@ usage: ggen.py [-h] [-r R] [-f F] [-ind IND] [-out OUT] [-gf GF] [-mf MF]
 optional arguments:
   -h, --help  show this help message and exit
   -r R        Output resolutions (e.g. 16, 30, 64x128, 180x360)
-  -f F        File Names (input netcdf file names). Use ' ' when using
-              wildcards.
+  -f F        File Names (input netcdf file names). Use ' ' when using wildcards.
   -ind IND    Input directory (current directory is default).
   -out OUT    Output directory (current directory is default).
-  -gf GF      Insert grid file.
+  -gf GF      Insert output grid file.
+  -igf IGF    Insert input grid file.
   -mf MF      Insert map file.
   -sd         Add a sigleton lev dim.
   -scrip      Generate SCRIP files
   -mp         Multiprocessing
   -ir IR      Input resolutions (e.g. 16, 30, 64x128, 180x360)
+  -algo ALGO  Remapping algorithm
 ```
 
 General Structure
@@ -37,9 +42,15 @@ Installation
 
 Works with e3sm_unifed environment
 
-On compy: `source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh`
+On compy: 
+```bash
+source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
+```
 
-On Cori: `source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_cori-haswell.sh`
+On Cori: 
+```bash
+source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_cori-haswell.sh
+```
 
 For others, use the YAML file provided to create a virtual conda enviroment (genv)
 
@@ -49,18 +60,18 @@ And then activate genv to use ggen
 
 `conda activate genv`
 
-Example
--------
+Examples
+--------
 
 ### General use (from command line)
 
-```console
+```bash
 python ggen.py -r <output resolutions> -f <input file names> -ind /input/file/directory -out /output/file/directory
 ```
 
 Example `log.ggen` output
 
-```
+```bash
 ################################## Process Started ##################################
 
 [cmd]: python ggen.py -r 30 -f bc_emission_def.nc -ind /Users/hass877/Work/data_analysis -out /Users/hass877/Work/data_analysis
@@ -128,7 +139,7 @@ Finished in 4.17 second(s)
 
 ### Using muliprocessing and wildcards
 
-```console
+```bash
 python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
 ```
 
@@ -137,7 +148,7 @@ python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/t
 
 #### log.ggen output
 
-```
+```bash
 ################################## Process Started ##################################
 
 [cmd]: python ggen.py -r 16,32,180x360 -f *bc* -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
@@ -346,7 +357,8 @@ source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
 python ggen.py -r 16,32,180x360 -f "*bc*" -ind /compyfs/inputdata/atm/cam/chem/trop_mozart_aero/emis/DECK_ne120/ -out /compyfs/hass877/e3sm_scratch/ggen_test -mp
 ```
 
-### References
+References
+----------
 
 <a id="1">[1]</a> 
 Ullrich, Paul A and Taylor, Mark A (2015). 
@@ -362,3 +374,6 @@ Monthly Weather Review, 144, 1529-1549.
 Zender, Charles S (2008). 
 Analysis of self-describing gridded geoscience data with netCDF Operators (NCO).
 Environmental Modelling & Software, 23, 1338-1342
+
+<a id="4">[4]</a>
+Hassan, T., Zhang, K., Li, J., Singh, B., Zhang, S., Wang, H., and Ma, P.-L. (2023). Impacts of spatial heterogeneity of anthropogenic aerosol emissions in a regionally-refined global aerosol-climate model, EGUsphere [preprint], https://doi.org/10.5194/egusphere-2023-1055.

@@ -57,8 +57,22 @@ class gen_RLL(object):
             n_lon = data.dims[self.xdim]
             n_lat = data.dims[self.ydim]
             
+            dlon_first = lon[1] - lon[0]
+            dlon_second = lon[n_lon-1] - lon[n_lon-2]
+            dlon_last = lon[0] - (lon[n_lon-1] - 360)
+            
+            if np.fabs(dlon_first-dlon_last) < 1e-12:
+                force_global = True
+            
             lon_edges = np.zeros(n_lon+1)
-            lon_edges[0] = 0.5*(lon[0] + lon[n_lon-1] - 360)
+            
+            if force_global:
+                lon_edges[0] = 0.5*(lon[0] + lon[n_lon-1] - 360)
+                lon_edges[n_lon] = lon_edges[0] + 360
+            else:
+                lon_edges[0] = lon[0] - 0.5*dlon_first
+                lon_edges[n_lon] = lon[n_lon-1] + 0.5*dlon_second
+                
             lon_edges[n_lon] = lon_edges[0] + 360
             lon_edges[1:-1] = 0.5*(lon[1:]+lon[:-1])
             
@@ -102,8 +116,10 @@ class gen_RLL(object):
         coord = np.array(nodes).T
 
         flipped = False
-        if ((lat_edges[1]<lat_edges[0])|(lon_edges[1]<lon_edges[0])):
-            flipped = True
+        if (lat_edges[1]<lat_edges[0]):
+            flipped = not flipped
+        if (lon_edges[1]<lon_edges[0]):
+            flipped = not flipped
 
         faces=[]
         if need_sp_node:
@@ -115,18 +131,17 @@ class gen_RLL(object):
                 face.append(0 if not flipped else (i+1) % n_nodes+1)
                 
                 faces.append(face)
- 
+
         jx = np.arange(beg, end) - beg
         ind = jx * n_nodes + sp_offset
         ind_next = (jx + 1) * n_nodes + sp_offset
         i = np.arange(n_lon)
         face = np.empty((4, len(jx), len(i)), dtype=int)
         face[0] = np.roll(ind[:, None] + i[None, :], -1, axis=1)
-        face[1] = ind_next[:, None] + (i[None, :] + 1) % n_nodes if not flipped else ind_next[:, None] + 1
+        face[1] = ind_next[:, None] + (i[None, :] + 1) % n_nodes if not flipped else ind[:, None] + i[None, :]
         face[2] = ind_next[:, None] + i[None, :]
         face[3] = ind[:, None] + i[None, :] if not flipped else ind_next[:, None] + (i[None, :] + 1) % n_nodes
         faces.extend(face.transpose(1, 2, 0).reshape(-1, 4))
-
         if need_np_node:
             jx = n_lat - beg -1
             ind = jx*n_nodes + sp_offset

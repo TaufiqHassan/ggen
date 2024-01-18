@@ -17,8 +17,11 @@ class generate_grids(object):
         self._file = kwargs.get('file', None)
         self._infile = kwargs.get('infile', None)
         self._grid = kwargs.get('grid', None)
+        self._ingrid = kwargs.get('ingrid', None)
         self._indir = kwargs.get('ind', '')
         self._outdir = kwargs.get('out', '')
+        self.xdim = kwargs.get('xdim', 'lon')
+        self.ydim = kwargs.get('ydim', 'lat')
         self.logger = logging.getLogger(str(get_dir_path(self._outdir))+'/log.ggen')
         
     @property
@@ -47,7 +50,7 @@ class generate_grids(object):
         
     @property
     def grid(self):
-        return self.file
+        return self.grid
     
     @grid.setter
     def grid(self, val):
@@ -64,7 +67,27 @@ class generate_grids(object):
                 checker(str(file))
                 self._grid.append(file)
             self._grid.remove(0)
-        
+    
+    @property
+    def ingrid(self):
+        return self.ingrid
+
+    @ingrid.setter
+    def ingrid(self, val):
+        dirval = get_dir_path(self._indir) / str(val)
+        if len(glob.glob(str(val)))>0:
+            self._ingrid=glob.glob(str(val))
+        elif len(glob.glob(str(dirval)))>0:
+            self._ingrid=glob.glob(str(dirval))
+        elif self._ingrid != None:
+            self._ingrid=[0]
+            files = [x.strip() for x in str(val).split(',')]
+            for zz in range(len(files)):
+                file = get_dir_path(self._indir) / str(files[zz])
+                checker(str(file))
+                self._ingrid.append(file)
+            self._ingrid.remove(0)    
+    
     @property
     def file(self):
         return self.file
@@ -116,16 +139,23 @@ class generate_grids(object):
 
         '''
         in_file_list = []
-        if self._ires != None:
+        if self._ingrid != None:
+            for g in self._ingrid:
+                self.logger.info('\nUsing specified input grid file: '+ g)
+                self.logger.info('\nSpecifying input grid file suppresses input file resolution.')
+                fname = gen_scrip(res=self._res,file=self._file,path=self._outdir,fdir=self._indir,ingrid=g,grid=self._grid,nc=True,xdim=self.xdim,ydim=self.ydim).get_scrip_file()
+                self.logger.info('\nGenerated '+str(fname))
+                in_file_list.append(str(fname))
+        elif self._ires != None:
             for r in self._ires:
                 self.logger.info('\nInput Resolution: '+str(r))
-                fname = gen_scrip(res=r,file=self._infile,path=self._outdir,fdir=self._indir,grid=self._grid,nc=True).get_scrip_file()
+                fname = gen_scrip(res=r,file=self._infile,path=self._outdir,fdir=self._indir,grid=self._grid,ingrid=self._ingrid,nc=True,xdim=self.xdim,ydim=self.ydim).get_scrip_file()
                 self.logger.info('\nGenerated '+str(fname))
                 in_file_list.append(str(fname))
         else:
             for f in self._file:
                 self.logger.info('\nSpecifying input file suppresses resolution.\n(Recommended for SE to RLL conversion)')
-                fname = gen_scrip(res=self._res,file=f,path=self._outdir,fdir=self._indir,grid=self._grid,nc=True).get_scrip_file()
+                fname = gen_scrip(res=self._res,file=f,path=self._outdir,fdir=self._indir,grid=self._grid,ingrid=self._ingrid,nc=True,xdim=self.xdim,ydim=self.ydim).get_scrip_file()
                 self.logger.info('\nGenerated '+str(fname))
                 in_file_list.append(str(fname))
         return in_file_list
@@ -148,13 +178,13 @@ class generate_grids(object):
             for g in self._grid:
                 self.logger.info('\nUsing specified grid file: '+ g)
                 self.logger.info('\nSpecifying grid file suppresses resolution.')
-                fname = gen_scrip(res=self._res,file=self._file,path=self._outdir,fdir=self._indir,grid=g,nc=True).get_scrip_file()
+                fname = gen_scrip(res=self._res,file=self._file,path=self._outdir,fdir=self._indir,grid=g,ingrid=self._ingrid,nc=True,xdim=self.xdim,ydim=self.ydim).get_scrip_file()
                 self.logger.info('\nGenerated '+str(fname))
                 out_file_list.append(str(fname))
         else:
             for r in self._res:
                 self.logger.info('\nOutput Resolution: '+r)
-                fname = gen_scrip(res=r,file=self._infile,path=self._outdir,fdir=self._indir,grid=self._grid,nc=True).get_scrip_file()
+                fname = gen_scrip(res=r,file=self._infile,path=self._outdir,fdir=self._indir,grid=self._grid,ingrid=self._ingrid,nc=True,xdim=self.xdim,ydim=self.ydim).get_scrip_file()
                 self.logger.info('\nGenerated '+str(fname))
                 out_file_list.append(str(fname))
         return out_file_list
